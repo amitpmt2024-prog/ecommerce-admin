@@ -20,7 +20,7 @@ import {
   Orders,
   Products,
   Profile,
-  Register,
+  // Register,
   Reviews,
   Users,
 } from "./pages";
@@ -29,10 +29,10 @@ const router = createBrowserRouter([
     path: "/login",
     element: <Login />,
   },
-  {
-    path: "/register",
-    element: <Register />,
-  },
+  // {
+  //   path: "/register",
+  //   element: <Register />,
+  // },
   {
     path: "/",
     element: <HomeLayout />,

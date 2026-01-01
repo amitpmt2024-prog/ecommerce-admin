@@ -17,8 +17,8 @@ import {
   ThirdPartyAuthButton,
   WhiteButton,
 } from "../components";
-import { Link } from "react-router-dom";
-import { FaArrowRight } from "react-icons/fa6";
+// import { Link } from "react-router-dom";
+// import { FaArrowRight } from "react-icons/fa6";
 import { useState } from "react";
 
 const LoginComponent = () => {
@@ -62,7 +62,7 @@ const LoginComponent = () => {
           py="2"
           text="Login now"
         ></WhiteButton>
-        <p className="dark:text-gray-400 text-gray-700 text-base cursor-pointer transition-colors flex gap-1 items-center max-sm:text-sm">
+        {/* <p className="dark:text-gray-400 text-gray-700 text-base cursor-pointer transition-colors flex gap-1 items-center max-sm:text-sm">
           Not registered yet?{" "}
           <Link
             to="/register"
@@ -70,7 +70,7 @@ const LoginComponent = () => {
           >
             Register <FaArrowRight className="mt-[2px]" />
           </Link>
-        </p>
+        </p> */}
       </div>
     </div>
   )

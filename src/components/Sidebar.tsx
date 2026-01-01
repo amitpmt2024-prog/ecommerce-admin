@@ -14,7 +14,6 @@ import { HiOutlineTag } from "react-icons/hi";
 import { HiOutlineTruck } from "react-icons/hi";
 import { HiOutlineStar } from "react-icons/hi";
 import { HiOutlineInformationCircle } from "react-icons/hi";
-import { HiOutlineChat } from "react-icons/hi";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import { HiOutlineX } from "react-icons/hi";
 import { setSidebar } from "../features/dashboard/dashboardSlice";
@@ -142,15 +141,6 @@ const Sidebar = () => {
               >
                 <HiLogin className="text-xl" />
                 <span className="text-lg">Login</span>
-              </NavLink>
-              <NavLink
-                to="/register"
-                className={(isActiveObj) =>
-                  isActiveObj.isActive ? navActiveClass : navInactiveClass
-                }
-              >
-                <HiUserGroup className="text-xl" />
-                <span className="text-lg">Register</span>
               </NavLink>
             </div>
           )}

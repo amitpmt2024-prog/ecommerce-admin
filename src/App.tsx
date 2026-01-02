@@ -24,6 +24,8 @@ import {
   Reviews,
   Users,
 } from "./pages";
+import { ProtectedRoute } from "./components";
+
 const router = createBrowserRouter([
   {
     path: "/login",
@@ -35,87 +37,91 @@ const router = createBrowserRouter([
   // },
   {
     path: "/",
-    element: <HomeLayout />,
+    element: (
+      <ProtectedRoute>
+        <HomeLayout />
+      </ProtectedRoute>
+    ),
     children: [
       {
         index: true,
-        element: <Landing />,
+        element: (<ProtectedRoute><Landing /></ProtectedRoute>),
       },
       {
         path: "/landing-v2",
-        element: <LandingV2 />,
+        element: (<ProtectedRoute><LandingV2 /></ProtectedRoute>),
       },
       {
         path: "/products",
-        element: <Products />,
+        element: (<ProtectedRoute><Products /></ProtectedRoute>),
       },
       {
         path: "/products/create-product",
-        element: <CreateProduct />,
+        element: (<ProtectedRoute><CreateProduct /></ProtectedRoute>),
       },
       {
         path: "/products/:id",
-        element: <EditProduct />,
+        element: (<ProtectedRoute><EditProduct /></ProtectedRoute>),
       },
       {
         path: "/categories",
-        element: <Categories />,
+        element: (<ProtectedRoute><Categories /></ProtectedRoute>),
       },
       {
         path: "/categories/create-category",
-        element: <CreateCategory />,
+        element: (<ProtectedRoute><CreateCategory /></ProtectedRoute>),
       },
       {
         path: "/categories/:id",
-        element: <EditCategory />,
+        element: (<ProtectedRoute><EditCategory /></ProtectedRoute>),
       },
       {
         path: "/orders",
-        element: <Orders />,
+        element: (<ProtectedRoute><Orders /></ProtectedRoute>),
       },
       {
         path: "/orders/create-order",
-        element: <CreateOrder />,
+        element: (<ProtectedRoute><CreateOrder /></ProtectedRoute>),
       },
       {
         path: "/orders/1",
-        element: <EditOrder />,
+        element: (<ProtectedRoute><EditOrder /></ProtectedRoute>),
       },
       {
         path: "/reviews",
-        element: <Reviews />,
+        element: (<ProtectedRoute><Reviews /></ProtectedRoute>),
       },
       {
         path: "/reviews/:id",
-        element: <EditReview />,
+        element: (<ProtectedRoute><EditReview /></ProtectedRoute>),
       },
       {
         path: "/reviews/create-review",
-        element: <CreateReview />,
+        element: (<ProtectedRoute><CreateReview /></ProtectedRoute>),
       },
       {
         path: "/users",
-        element: <Users />,
+        element: (<ProtectedRoute><Users /></ProtectedRoute>),
       },
       {
         path: "/users/:id",
-        element: <EditUser />,
+        element: (<ProtectedRoute><EditUser /></ProtectedRoute>),
       },
       {
         path: "/users/create-user",
-        element: <CreateUser />,
+        element: (<ProtectedRoute><CreateUser /></ProtectedRoute>),
       },
       {
         path: "/help-desk",
-        element: <HelpDesk />,
+        element: (<ProtectedRoute><HelpDesk /></ProtectedRoute>),
       },
       {
         path: "/notifications",
-        element: <Notifications />,
+        element: (<ProtectedRoute><Notifications /></ProtectedRoute>),
       },
       {
         path: "/profile",
-        element: <Profile />,
+        element: (<ProtectedRoute><Profile /></ProtectedRoute>),
       },
     ],
     

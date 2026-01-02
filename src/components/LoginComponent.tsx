@@ -9,69 +9,99 @@
 // *********************
 
 import { FaReact } from "react-icons/fa6";
-// import { FaGoogle } from "react-icons/fa6";
-// import { FaGithub } from "react-icons/fa6";
 import {
   InputWithLabel,
   SimpleInput,
-  // ThirdPartyAuthButton,
-  WhiteButton,
 } from "../components";
-// import { Link } from "react-router-dom";
-// import { FaArrowRight } from "react-icons/fa6";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { loginApi } from "../api/authApi";
 
 const LoginComponent = () => {
-    const [ email, setEmail ] = useState("john@email.com");
-    const [ password, setPassword ] = useState("pass1234567890");
+  const [email, setEmail] = useState("johndoe@gmail.com");
+  const [password, setPassword] = useState("Test@123");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+
+    try {
+      const response = await loginApi({ email, password });
+      
+      if (response.success) {
+        // Store authentication data in localStorage
+        if (response.token) {
+          localStorage.setItem("authToken", response.token);
+        }
+        // Redirect to home page
+        navigate("/");
+      } else {
+        setError(response.message || "Login failed. Please try again.");
+      }
+    } catch (err) {
+      setError("An error occurred. Please try again.");
+      console.error("Login error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="w-[500px] h-[750px] dark:bg-gray-900 bg-white flex flex-col justify-between items-center py-10 max-sm:w-[400px] max-[420px]:w-[320px] max-sm:h-[750px]">
-      <div className="flex flex-col items-center gap-10">
+      <form onSubmit={handleSubmit} className="flex flex-col items-center gap-10 w-full">
         <FaReact className="text-5xl dark:text-whiteSecondary text-blackPrimary hover:rotate-180 hover:duration-1000 hover:ease-in-out cursor-pointer max-sm:text-4xl" />
         <h2 className="text-2xl dark:text-whiteSecondary text-blackPrimary font-medium max-sm:text-xl">
           Welcome to the dashboard!
         </h2>
-        {/* <div className="flex gap-5">
-          <ThirdPartyAuthButton>
-            {" "}
-            <FaGoogle className="text-2xl max-sm:text-xl" />
-          </ThirdPartyAuthButton>
-          <ThirdPartyAuthButton>
-            <FaGithub className="text-2xl max-sm:text-xl" />
-          </ThirdPartyAuthButton>
-        </div> */}
-
         <p className="dark:text-gray-400 text-gray-700 text-xl max-sm:text-base">OR</p>
 
         <div className="w-full flex flex-col gap-5">
           <InputWithLabel label="Email">
-            <SimpleInput type="email" placeholder="Enter a email..." value={email} onChange={(e) => setEmail(e.target.value)} />
+            <SimpleInput 
+              type="email" 
+              placeholder="Enter a email..." 
+              value={email} 
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              disabled={loading}
+            />
           </InputWithLabel>
 
           <InputWithLabel label="Password">
-            <SimpleInput type="password" placeholder="Enter a password..." value={password} onChange={(e) => setPassword(e.target.value)} />
+            <SimpleInput 
+              type="password" 
+              placeholder="Enter a password..." 
+              value={password} 
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              disabled={loading}
+            />
           </InputWithLabel>
         </div>
+        
+        {error && (
+          <p className="text-red-500 text-sm w-full text-center">{error}</p>
+        )}
+        
         <p className="dark:text-gray-400 text-gray-700 text-base dark:hover:text-gray-300 hover:text-gray-600 cursor-pointer transition-colors max-sm:text-sm">
           Forgot password?
         </p>
-        <WhiteButton
-          link="/"
-          textSize="lg"
-          width="full"
-          py="2"
-          text="Login now"
-        ></WhiteButton>
-        {/* <p className="dark:text-gray-400 text-gray-700 text-base cursor-pointer transition-colors flex gap-1 items-center max-sm:text-sm">
-          Not registered yet?{" "}
-          <Link
-            to="/register"
-            className="dark:text-whiteSecondary text-blackPrimary hover:text-black flex gap-1 items-center dark:hover:text-white max-sm:text-sm hover:underline"
-          >
-            Register <FaArrowRight className="mt-[2px]" />
-          </Link>
-        </p> */}
-      </div>
+        <button
+          type="submit"
+          disabled={loading}
+          className={`dark:bg-whiteSecondary bg-blackPrimary w-full py-2 text-lg dark:hover:bg-white hover:bg-gray-800 bg-blackPrimary duration-200 flex items-center justify-center gap-x-2 ${
+            loading ? "opacity-50 cursor-not-allowed" : ""
+          }`}
+        >
+          <span className="dark:text-blackPrimary text-whiteSecondary font-semibold">
+            {loading ? "Logging in..." : "Login"}
+          </span>
+        </button>
+      </form>
     </div>
   )
 }

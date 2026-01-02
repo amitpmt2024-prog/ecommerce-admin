@@ -19,7 +19,6 @@ import { NavLink } from "react-router-dom";
 import { useState } from "react";
 
 const Sidebar = () => {
-  const [isLandingOpen, setIsLandingOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const { isSidebarOpen } = useAppSelector((state) => state.dashboard);
   const dispatch = useAppDispatch();
@@ -43,14 +42,6 @@ const Sidebar = () => {
           onClick={() => dispatch(setSidebar())}
         />
         <div>
-          <div
-            onClick={() => setIsLandingOpen(() => !isLandingOpen)}
-            className="block flex items-center self-stretch gap-4 py-4 px-6 dark:bg-blackPrimary dark:hover:bg-blackSecondary cursor-pointer max-xl:py-3 dark:text-whiteSecondary hover:bg-white text-blackPrimary bg-whiteSecondary"
-          >
-            <HiOutlineHome className="text-xl" />
-            <span className="text-lg">Landing pages</span>
-          </div>
-          {isLandingOpen && (
             <div>
               <NavLink
                 to="/"
@@ -59,20 +50,9 @@ const Sidebar = () => {
                 }
               >
                 <HiOutlineHome className="text-xl" />
-                <span className="text-lg">Overview v1</span>
-              </NavLink>
-
-              <NavLink
-                to="/landing-v2"
-                className={(isActiveObj) =>
-                  isActiveObj.isActive ? navActiveClass : navInactiveClass
-                }
-              >
-                <HiOutlineHome className="text-xl" />
-                <span className="text-lg">Overview v2</span>
+                <span className="text-lg">Dashboard</span>
               </NavLink>
             </div>
-          )}
 
           <NavLink
             to="/products"

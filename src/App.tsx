@@ -14,13 +14,11 @@ import {
   HelpDesk,
   HomeLayout,
   Landing,
-  LandingV2,
   Login,
   Notifications,
   Orders,
   Products,
   Profile,
-  // Register,
   Reviews,
   Users,
 } from "./pages";
@@ -47,10 +45,10 @@ const router = createBrowserRouter([
         index: true,
         element: (<ProtectedRoute><Landing /></ProtectedRoute>),
       },
-      {
-        path: "/landing-v2",
-        element: (<ProtectedRoute><LandingV2 /></ProtectedRoute>),
-      },
+      // {
+      //   path: "/landing-v2",
+      //   element: (<ProtectedRoute><LandingV2 /></ProtectedRoute>),
+      // },
       {
         path: "/products",
         element: (<ProtectedRoute><Products /></ProtectedRoute>),

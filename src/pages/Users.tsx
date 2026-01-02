@@ -10,7 +10,6 @@ import {
   UserTable,
   WhiteButton,
 } from "../components";
-import { AiOutlineExport } from "react-icons/ai";
 
 const Users = () => {
   return (
@@ -30,10 +29,6 @@ const Users = () => {
               </p>
             </div>
             <div className="flex gap-x-2 max-[370px]:flex-col max-[370px]:gap-2 max-[370px]:items-center">
-              <button className="dark:bg-blackPrimary bg-whiteSecondary border border-gray-600 w-32 py-2 text-lg dark:hover:border-gray-500 hover:border-gray-400 duration-200 flex items-center justify-center gap-x-2">
-                <AiOutlineExport className="dark:text-whiteSecondary text-blackPrimary text-base" />
-                <span className="dark:text-whiteSecondary text-blackPrimary font-medium">Export</span>
-              </button>
               <WhiteButton
                 link="/users/create-user"
                 text="Add a user"

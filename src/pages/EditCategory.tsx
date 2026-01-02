@@ -10,7 +10,7 @@ import SelectInput from "../components/SelectInput";
 import { selectList } from "../utils/data";
 import { AiOutlineSave } from "react-icons/ai";
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const EditCategory = () => {
   const [inputObject, setInputObject] = useState({

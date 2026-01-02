@@ -7,7 +7,7 @@ import {
   TextAreaInput,
 } from "../components";
 import SelectInput from "../components/SelectInput";
-import { selectList, stockStatusList } from "../utils/data";
+import { selectList } from "../utils/data";
 import { AiOutlineSave } from "react-icons/ai";
 import { Link } from "react-router-dom";
 

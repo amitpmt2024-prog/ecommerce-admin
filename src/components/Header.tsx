@@ -10,7 +10,7 @@
 
 import { FaReact } from "react-icons/fa6";
 import { HiOutlineMoon, HiOutlineSun } from "react-icons/hi";
-import { HiOutlineBell } from "react-icons/hi";
+// import { HiOutlineBell } from "react-icons/hi";
 import { HiOutlineMenu } from "react-icons/hi";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import { setSidebar } from "../features/dashboard/dashboardSlice";
@@ -46,9 +46,9 @@ const Header = () => {
               className="text-xl dark:text-whiteSecondary text-blackPrimary cursor-pointer"
             />
           )}
-          <Link to="/notifications">
+          {/* <Link to="/notifications">
             <HiOutlineBell className="text-xl dark:text-whiteSecondary text-blackPrimary" />
-          </Link>
+          </Link> */}
           <Link to="/profile">
             <div className="flex gap-2 items-center">
               <img

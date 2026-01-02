@@ -96,7 +96,7 @@ const Sidebar = () => {
             <HiOutlineTag className="text-xl" />
             <span className="text-lg">Categories</span>
           </NavLink>
-          <NavLink
+          {/* <NavLink
             to="/orders"
             className={(isActiveObj) =>
               isActiveObj.isActive ? navActiveClass : navInactiveClass
@@ -104,8 +104,8 @@ const Sidebar = () => {
           >
             <HiOutlineTruck className="text-xl" />
             <span className="text-lg">Orders</span>
-          </NavLink>
-          <NavLink
+          </NavLink> */}
+          {/* <NavLink
             to="/users"
             className={(isActiveObj) =>
               isActiveObj.isActive ? navActiveClass : navInactiveClass
@@ -113,8 +113,8 @@ const Sidebar = () => {
           >
             <HiOutlineUser className="text-xl" />
             <span className="text-lg">Users</span>
-          </NavLink>
-          <NavLink
+          </NavLink> */}
+          {/* <NavLink
             to="/reviews"
             className={(isActiveObj) =>
               isActiveObj.isActive ? navActiveClass : navInactiveClass
@@ -122,7 +122,7 @@ const Sidebar = () => {
           >
             <HiOutlineStar className="text-xl" />
             <span className="text-lg">Reviews</span>
-          </NavLink>
+          </NavLink> */}
 
           <div
             onClick={() => setIsAuthOpen(() => !isAuthOpen)}

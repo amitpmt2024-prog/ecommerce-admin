@@ -17,7 +17,6 @@ const SingleProgressElementTotalSavings = ({
   totalMoney: number;
   percentSaved: number;
 }) => {
-    console.log(title, totalMoney, percentSaved);
     
     const percentAmount = totalMoney * percentSaved / 100;
   return (

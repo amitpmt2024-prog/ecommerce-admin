@@ -11,7 +11,7 @@
     Here is the complete overview of your eCommerce store. Analyze the
     statistics and make smart decisions.
   </Welcome.Description>
-  <Welcome.ActionButton onClick={() => console.log("Analyzing...")}>
+  <Welcome.ActionButton onClick={() =>>
     Analyze the statistics
   </Welcome.ActionButton>
 </Welcome>; */

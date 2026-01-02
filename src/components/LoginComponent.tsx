@@ -9,12 +9,12 @@
 // *********************
 
 import { FaReact } from "react-icons/fa6";
-import { FaGoogle } from "react-icons/fa6";
-import { FaGithub } from "react-icons/fa6";
+// import { FaGoogle } from "react-icons/fa6";
+// import { FaGithub } from "react-icons/fa6";
 import {
   InputWithLabel,
   SimpleInput,
-  ThirdPartyAuthButton,
+  // ThirdPartyAuthButton,
   WhiteButton,
 } from "../components";
 // import { Link } from "react-router-dom";
@@ -31,7 +31,7 @@ const LoginComponent = () => {
         <h2 className="text-2xl dark:text-whiteSecondary text-blackPrimary font-medium max-sm:text-xl">
           Welcome to the dashboard!
         </h2>
-        <div className="flex gap-5">
+        {/* <div className="flex gap-5">
           <ThirdPartyAuthButton>
             {" "}
             <FaGoogle className="text-2xl max-sm:text-xl" />
@@ -39,7 +39,7 @@ const LoginComponent = () => {
           <ThirdPartyAuthButton>
             <FaGithub className="text-2xl max-sm:text-xl" />
           </ThirdPartyAuthButton>
-        </div>
+        </div> */}
 
         <p className="dark:text-gray-400 text-gray-700 text-xl max-sm:text-base">OR</p>
 

@@ -7,9 +7,7 @@ import {
 import { HiArrowSmallUp } from "react-icons/hi2";
 import { HiShoppingCart } from "react-icons/hi2";
 import ChartItem from "../components/chart/ChartItem";
-import RechartsAreaChart from "../components/chart/RechartsAreaChart";
 import RechartsBarChart from "../components/chart/RechartsBarChart";
-import RechartsLineChart from "../components/chart/RechartsLineChart";
 
 const Landingv2 = () => {
   return (

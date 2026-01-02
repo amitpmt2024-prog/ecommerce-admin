@@ -70,7 +70,7 @@ const Sidebar = () => {
                 }
               >
                 <HiOutlineHome className="text-xl" />
-                <span className="text-lg">Overview v2</span>
+                <span className="text-lg">Overview v22</span>
               </NavLink>
             </div>
           )}

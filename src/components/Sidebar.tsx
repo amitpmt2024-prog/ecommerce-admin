@@ -11,13 +11,10 @@
 import { HiLogin, HiOutlineHome, HiUserGroup } from "react-icons/hi";
 import { HiOutlineDevicePhoneMobile } from "react-icons/hi2";
 import { HiOutlineTag } from "react-icons/hi";
-import { HiOutlineTruck } from "react-icons/hi";
-import { HiOutlineStar } from "react-icons/hi";
 import { HiOutlineInformationCircle } from "react-icons/hi";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import { HiOutlineX } from "react-icons/hi";
 import { setSidebar } from "../features/dashboard/dashboardSlice";
-import { HiOutlineUser } from "react-icons/hi";
 import { NavLink } from "react-router-dom";
 import { useState } from "react";
 

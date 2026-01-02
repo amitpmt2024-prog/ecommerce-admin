@@ -18,9 +18,9 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   // Check if user is authenticated by checking localStorage
   const authToken = localStorage.getItem("authToken");
 
-  // If user is not authenticated, redirect to login
+  // If user is not authenticated, redirect to login with error message
   if (!authToken) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login?error=Please login to access this page" replace />;
   }
 
   // If authenticated, render the protected component

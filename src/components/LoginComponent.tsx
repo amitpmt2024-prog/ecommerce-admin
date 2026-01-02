@@ -13,16 +13,27 @@ import {
   InputWithLabel,
   SimpleInput,
 } from "../components";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginApi } from "../api/authApi";
 
-const LoginComponent = () => {
+interface LoginComponentProps {
+  initialError?: string | null;
+}
+
+const LoginComponent = ({ initialError }: LoginComponentProps = {} as LoginComponentProps) => {
   const [email, setEmail] = useState("johndoe@gmail.com");
   const [password, setPassword] = useState("Test@123");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(initialError || null);
   const navigate = useNavigate();
+
+  // Set initial error if provided
+  useEffect(() => {
+    if (initialError) {
+      setError(initialError);
+    }
+  }, [initialError]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

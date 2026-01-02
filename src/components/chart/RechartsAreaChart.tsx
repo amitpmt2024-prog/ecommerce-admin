@@ -77,8 +77,12 @@ import {
       </ResponsiveContainer>
     );
   };
-  
-  const CustomTooltip = ({ active, payload, label }) => {
+  interface CustomTooltipProps {
+  active?: boolean;
+  payload?: Array<{ value: number }>;
+  label?: string;
+}
+  const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
     if (active && payload && payload.length) {
       return (
         <div className="p-4 bg-slate-900 flex flex-col gap-4 rounded-md">

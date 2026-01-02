@@ -28,7 +28,6 @@ const Sidebar = () => {
   const sidebarClass: string = isSidebarOpen
     ? "sidebar-open"
     : "sidebar-closed";
-
   const navActiveClass: string =
     "block dark:bg-whiteSecondary flex items-center self-stretch gap-4 py-4 px-6 cursor-pointer max-xl:py-3 dark:text-blackPrimary bg-white text-blackPrimary";
   const navInactiveClass: string =

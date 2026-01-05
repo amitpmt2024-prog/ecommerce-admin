@@ -12,12 +12,12 @@ import { db } from "../Firebase";
 
 type FormValues = {
   categoryTitle: string,
-  // categoryImage: string
+  categoryImage: string
 }
 
 const defaultValues: FormValues = {
   categoryTitle: '',
-  // categoryImage: ''
+  categoryImage: ''
 }
 // 🔥 Step 1: Reusable validation rules
 const validationRules = {
@@ -25,7 +25,7 @@ const validationRules = {
     required: "Category title is required",
   },
   // categoryImage: {
-  //   required: "Category image is required",
+  //   optional: "Category image is required",
   // },
 };
 
@@ -60,6 +60,7 @@ const CreateCategory = () => {
         if (docSnap.exists()) {
           const data = docSnap.data();
           setValue("categoryTitle", data.categoryTitle || "");
+          setValue("categoryImage", data.categoryImage || "");
         } else {
           setError("Category not found");
         }
@@ -81,10 +82,10 @@ const CreateCategory = () => {
 
     try {
       if (isEditMode && id) {
-        // Update existing document
         const docRef = doc(db, "category", id);
         await updateDoc(docRef, {
           categoryTitle: data.categoryTitle,
+          categoryImage: data.categoryImage,
           updatedAt: new Date().toISOString(),
         });
 
@@ -95,6 +96,7 @@ const CreateCategory = () => {
         // Add new document
         const docRef = await addDoc(collection(db, "category"), {
           categoryTitle: data.categoryTitle,
+          categoryImage: data.categoryImage,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         });
@@ -192,10 +194,10 @@ const CreateCategory = () => {
                     </>
                   )}
                 />
-                {/* <label className="form-label">
+                <label className="form-label">
                   Category Image
                 </label>
-                <Controller control={control} name="categoryImage" rules={validationRules.categoryImage} render={({ field }) => (
+                <Controller control={control} name="categoryImage" render={({ field }) => (
                   <>
                     <input
                       {...field}
@@ -209,7 +211,7 @@ const CreateCategory = () => {
                     )}
                   </>
                 )}
-                /> */}
+                />
               </div>
               <button 
                 type="submit" 

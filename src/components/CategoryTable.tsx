@@ -18,6 +18,7 @@ import { db } from "../Firebase";
 interface Category {
   id: string;
   categoryTitle: string;
+  categoryImage: string;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -73,7 +74,13 @@ const CategoryTable = ({ categories }: CategoryTableProps) => {
             scope="col"
             className="py-2 pl-4 pr-8 font-semibold sm:pl-6 lg:pl-8"
           >
-            Category
+            Title
+          </th>
+          <th
+            scope="col"
+            className="py-2 pl-4 pr-8 font-semibold sm:pl-6 lg:pl-8"
+          >
+            Image
           </th>
           <th
             scope="col"
@@ -97,13 +104,15 @@ const CategoryTable = ({ categories }: CategoryTableProps) => {
             <tr key={category.id}>
               <td className="py-4 pl-4 pr-8 sm:pl-6 lg:pl-8">
                 <div className="flex items-center gap-x-4">
-                  <div className="h-8 w-8 rounded-full bg-gray-800 flex items-center justify-center">
-                    <span className="text-white text-xs font-semibold">
-                      {category.categoryTitle.charAt(0).toUpperCase()}
-                    </span>
-                  </div>
                   <div className="truncate text-sm font-medium leading-6 dark:text-whiteSecondary text-blackPrimary">
                     {category.categoryTitle}
+                  </div>
+                </div>
+              </td>
+              <td className="py-4 pl-4 pr-8 sm:pl-6 lg:pl-8">
+                <div className="flex items-center gap-x-4">
+                  <div className="truncate text-sm font-medium leading-6 dark:text-whiteSecondary text-blackPrimary">
+                    {category.categoryImage || "No image"}
                   </div>
                 </div>
               </td>

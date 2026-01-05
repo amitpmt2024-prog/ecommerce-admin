@@ -9,6 +9,7 @@ import { db } from "../Firebase";
 interface Category {
   id: string;
   categoryTitle: string;
+  categoryImage: string;
   createdAt?: string;
   updatedAt?: string;
 }

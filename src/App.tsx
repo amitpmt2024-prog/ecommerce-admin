@@ -71,7 +71,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/categories/:id",
-        element: (<ProtectedRoute><EditCategory /></ProtectedRoute>),
+        element: (<ProtectedRoute><CreateCategory /></ProtectedRoute>),
       },
       {
         path: "/orders",

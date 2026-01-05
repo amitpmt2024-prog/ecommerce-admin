@@ -1,13 +1,13 @@
 import { HiOutlineSave } from "react-icons/hi";
 import { Controller, useForm } from "react-hook-form"
-import { useState } from "react";
-import { collection, addDoc } from "firebase/firestore";
+import { useState, useEffect } from "react";
+import { collection, addDoc, doc, getDoc, updateDoc } from "firebase/firestore";
 
 import {
   Sidebar,
 } from "../components";
 import { AiOutlineSave } from "react-icons/ai";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { db } from "../Firebase";
 
 type FormValues = {
@@ -30,16 +30,49 @@ const validationRules = {
 };
 
 const CreateCategory = () => {
+  const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
+  const isEditMode = !!id;
+
   const {
     handleSubmit,
     control,
     formState: { errors },
-    reset
+    reset,
+    setValue
   } = useForm<FormValues>({ defaultValues });
 
   const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(isEditMode);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+
+  // Fetch category data if in edit mode
+  useEffect(() => {
+    const fetchCategory = async () => {
+      if (!isEditMode) return;
+
+      setFetching(true);
+      try {
+        const docRef = doc(db, "category", id);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          setValue("categoryTitle", data.categoryTitle || "");
+        } else {
+          setError("Category not found");
+        }
+      } catch (err) {
+        console.error("Error fetching category: ", err);
+        setError("Failed to load category. Please try again.");
+      } finally {
+        setFetching(false);
+      }
+    };
+
+    fetchCategory();
+  }, [id, isEditMode, setValue]);
 
   const submitForm = async (data: FormValues) => {
     setLoading(true);
@@ -47,24 +80,38 @@ const CreateCategory = () => {
     setSuccess(null);
 
     try {
-      // Add document to Firestore collection "category"
-      const docRef = await addDoc(collection(db, "category"), {
-        categoryTitle: data.categoryTitle,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      });
+      if (isEditMode && id) {
+        // Update existing document
+        const docRef = doc(db, "category", id);
+        await updateDoc(docRef, {
+          categoryTitle: data.categoryTitle,
+          updatedAt: new Date().toISOString(),
+        });
 
-      console.log("Category created with ID: ", docRef.id);
-      setSuccess("Category created successfully!");
-      reset(); // Reset form after successful submission
+        console.log("Category updated with ID: ", id);
+        setSuccess("Category updated successfully!");
+        navigate('/categories');
+      } else {
+        // Add new document
+        const docRef = await addDoc(collection(db, "category"), {
+          categoryTitle: data.categoryTitle,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        });
+
+        console.log("Category created with ID: ", docRef.id);
+        setSuccess("Category created successfully!");
+        reset();
+        navigate('/categories');
+      }
       
       // Clear success message after 3 seconds
       setTimeout(() => {
         setSuccess(null);
       }, 3000);
     } catch (err) {
-      console.error("Error creating category: ", err);
-      setError("Failed to create category. Please try again.");
+      console.error(`Error ${isEditMode ? 'updating' : 'creating'} category: `, err);
+      setError(`Failed to ${isEditMode ? 'update' : 'create'} category. Please try again.`);
     } finally {
       setLoading(false);
     }
@@ -79,7 +126,7 @@ const CreateCategory = () => {
           <div className="px-4 sm:px-6 lg:px-8 pb-8 border-b border-gray-800 flex justify-between items-center max-sm:flex-col max-sm:gap-5">
             <div className="flex flex-col gap-3">
               <h2 className="text-3xl font-bold leading-7 dark:text-whiteSecondary text-blackPrimary">
-                Add new category
+                {isEditMode ? "Edit category" : "Add new category"}
               </h2>
             </div>
             <div className="flex gap-x-2 max-[370px]:flex-col max-[370px]:gap-2 max-[370px]:items-center">
@@ -106,6 +153,11 @@ const CreateCategory = () => {
                 Basic information
               </h3>
               <div className="mt-4 flex flex-col gap-5">
+                {fetching && (
+                  <div className="p-3 bg-blue-100 border border-blue-400 text-blue-700 rounded">
+                    Loading category...
+                  </div>
+                )}
                 {error && (
                   <div className="p-3 bg-red-100 border border-red-400 text-red-700 rounded">
                     {error}
@@ -130,7 +182,7 @@ const CreateCategory = () => {
                         type="text"
                         className="form-control"
                         placeholder="Enter a category title..."
-                        disabled={loading}
+                        disabled={loading || fetching}
                       />
                       {errors.categoryTitle && (
                         <small className="text-danger">
@@ -162,9 +214,11 @@ const CreateCategory = () => {
               <button 
                 type="submit" 
                 className="btn btn-primary mt-2"
-                disabled={loading}
+                disabled={loading || fetching}
               >
-                {loading ? "Creating..." : "Submit"}
+                {loading 
+                  ? (isEditMode ? "Updating..." : "Creating...") 
+                  : (isEditMode ? "Update Category" : "Create Category")}
               </button>
             </form>
           </div>

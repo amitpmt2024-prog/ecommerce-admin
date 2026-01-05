@@ -1,17 +1,76 @@
 import { HiOutlineSave } from "react-icons/hi";
+import { Controller, useForm } from "react-hook-form"
+import { useState } from "react";
+import { collection, addDoc } from "firebase/firestore";
+
 import {
-  ImageUpload,
-  InputWithLabel,
   Sidebar,
-  SimpleInput,
-  TextAreaInput,
 } from "../components";
-import SelectInput from "../components/SelectInput";
-import { selectList } from "../utils/data";
 import { AiOutlineSave } from "react-icons/ai";
 import { Link } from "react-router-dom";
+import { db } from "../Firebase";
+
+type FormValues = {
+  categoryTitle: string,
+  // categoryImage: string
+}
+
+const defaultValues: FormValues = {
+  categoryTitle: '',
+  // categoryImage: ''
+}
+// 🔥 Step 1: Reusable validation rules
+const validationRules = {
+  categoryTitle: {
+    required: "Category title is required",
+  },
+  // categoryImage: {
+  //   required: "Category image is required",
+  // },
+};
 
 const CreateCategory = () => {
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+    reset
+  } = useForm<FormValues>({ defaultValues });
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+
+  const submitForm = async (data: FormValues) => {
+    setLoading(true);
+    setError(null);
+    setSuccess(null);
+
+    try {
+      // Add document to Firestore collection "category"
+      const docRef = await addDoc(collection(db, "category"), {
+        categoryTitle: data.categoryTitle,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      });
+
+      console.log("Category created with ID: ", docRef.id);
+      setSuccess("Category created successfully!");
+      reset(); // Reset form after successful submission
+      
+      // Clear success message after 3 seconds
+      setTimeout(() => {
+        setSuccess(null);
+      }, 3000);
+    } catch (err) {
+      console.error("Error creating category: ", err);
+      setError("Failed to create category. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
   return (
     <div className="h-auto border-t border-blackSecondary border-1 flex dark:bg-blackPrimary bg-whiteSecondary">
       <Sidebar />
@@ -41,72 +100,78 @@ const CreateCategory = () => {
               </Link>
             </div>
           </div>
-
-          {/* Add Category section here  */}
           <div className="px-4 sm:px-6 lg:px-8 pb-8 pt-8 grid grid-cols-2 gap-x-10 max-xl:grid-cols-1 max-xl:gap-y-10">
-            {/* left div */}
-            <div>
+            <form onSubmit={handleSubmit(submitForm)}>
               <h3 className="text-2xl font-bold leading-7 dark:text-whiteSecondary text-blackPrimary">
                 Basic information
               </h3>
-
               <div className="mt-4 flex flex-col gap-5">
-                <InputWithLabel label="Category title">
-                  <SimpleInput
-                    type="text"
-                    placeholder="Enter a category title..."
-                  />
-                </InputWithLabel>
-
-                <InputWithLabel label="Category description">
-                  <TextAreaInput
-                    placeholder="Enter a category description..."
-                    rows={4}
-                    cols={50}
-                  />
-                </InputWithLabel>
-
-                <InputWithLabel label="Category slug">
-                  <SimpleInput
-                    type="text"
-                    placeholder="Enter a category slug..."
-                  />
-                </InputWithLabel>
-
-                <InputWithLabel label="Parent category (optional)">
-                  <SelectInput selectList={selectList} />
-                </InputWithLabel>
+                {error && (
+                  <div className="p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+                    {error}
+                  </div>
+                )}
+                {success && (
+                  <div className="p-3 bg-green-100 border border-green-400 text-green-700 rounded">
+                    {success}
+                  </div>
+                )}
+                <label className="form-label">
+                  Category title
+                </label>
+                <Controller
+                  control={control}
+                  name="categoryTitle"
+                  rules={validationRules.categoryTitle}
+                  render={({ field }) => (
+                    <>
+                      <input
+                        {...field}
+                        type="text"
+                        className="form-control"
+                        placeholder="Enter a category title..."
+                        disabled={loading}
+                      />
+                      {errors.categoryTitle && (
+                        <small className="text-danger">
+                          {errors.categoryTitle.message}
+                        </small>
+                      )}
+                    </>
+                  )}
+                />
+                {/* <label className="form-label">
+                  Category Image
+                </label>
+                <Controller control={control} name="categoryImage" rules={validationRules.categoryImage} render={({ field }) => (
+                  <>
+                    <input
+                      {...field}
+                      type="text"
+                      className="form-control"
+                      placeholder="Enter a category image..."
+                    />
+                    {errors.categoryImage && (<small className="text-danger">
+                      {errors.categoryImage.message}
+                    </small>
+                    )}
+                  </>
+                )}
+                /> */}
               </div>
-              <h3 className="text-2xl font-bold leading-7 dark:text-whiteSecondary text-blackPrimary mt-16">
-                SEO
-              </h3>
-              <div className="mt-4 flex flex-col gap-5">
-                <InputWithLabel label="Meta title">
-                  <SimpleInput type="text" placeholder="Enter a meta title..." />
-                </InputWithLabel>
-
-                <InputWithLabel label="Meta description">
-                  <TextAreaInput
-                    placeholder="Enter a meta description..."
-                    rows={4}
-                    cols={50}
-                  />
-                </InputWithLabel>
-              </div>
-            </div>
-
-            {/* right div */}
-            <div>
-              <h3 className="text-2xl font-bold leading-7 dark:text-whiteSecondary text-blackPrimary">
-                Category image
-              </h3>
-
-              <ImageUpload />
-            </div>
+              <button 
+                type="submit" 
+                className="btn btn-primary mt-2"
+                disabled={loading}
+              >
+                {loading ? "Creating..." : "Submit"}
+              </button>
+            </form>
           </div>
         </div>
-      </div>
-    </div>
+      </div >
+    </div >
   );
 };
 export default CreateCategory;
+

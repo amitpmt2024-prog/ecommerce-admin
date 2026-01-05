@@ -2,8 +2,49 @@ import { CategoryTable, Pagination, RowsPerPage, Sidebar, WhiteButton } from "..
 import { HiOutlinePlus } from "react-icons/hi";
 import { HiOutlineChevronRight } from "react-icons/hi";
 import { HiOutlineSearch } from "react-icons/hi";
+import { useState, useEffect } from "react";
+import { collection, onSnapshot } from "firebase/firestore";
+import { db } from "../Firebase";
+
+interface Category {
+  id: string;
+  categoryTitle: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
 
 const Categories = () => {
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Set up real-time listener for categories
+    const unsubscribe = onSnapshot(
+      collection(db, "category"),
+      (snapshot) => {
+        const categoryData: Category[] = [];
+        snapshot.forEach((doc) => {
+          categoryData.push({
+            id: doc.id,
+            ...doc.data(),
+          } as Category);
+        });
+        setCategories(categoryData);
+        setLoading(false);
+        setError(null);
+      },
+      (err) => {
+        console.error("Error fetching categories: ", err);
+        setError("Failed to load categories");
+        setLoading(false);
+      }
+    );
+
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
+  }, []);
+
   return (
     <div className="h-auto border-t border-blackSecondary border-1 flex dark:bg-blackPrimary bg-whiteSecondary">
       <Sidebar />
@@ -47,7 +88,17 @@ const Categories = () => {
               </select>
             </div>
           </div>
-          <CategoryTable />
+          {loading ? (
+            <div className="px-4 sm:px-6 lg:px-8 mt-6 text-center">
+              <p className="dark:text-whiteSecondary text-blackPrimary">Loading categories...</p>
+            </div>
+          ) : error ? (
+            <div className="px-4 sm:px-6 lg:px-8 mt-6 text-center">
+              <p className="text-red-500">{error}</p>
+            </div>
+          ) : (
+            <CategoryTable categories={categories} />
+          )}
           <div className="flex justify-between items-center px-4 sm:px-6 lg:px-8 py-6 max-sm:flex-col gap-4 max-sm:pt-6 max-sm:pb-0">
             <RowsPerPage />
             <Pagination />

@@ -6,7 +6,6 @@ import {
   CreateProduct,
   CreateReview,
   CreateUser,
-  EditCategory,
   EditOrder,
   EditProduct,
   EditReview,

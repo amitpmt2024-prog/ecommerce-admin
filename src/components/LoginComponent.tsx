@@ -68,8 +68,6 @@ const LoginComponent = ({ initialError }: LoginComponentProps = {} as LoginCompo
         <h2 className="text-2xl dark:text-whiteSecondary text-blackPrimary font-medium max-sm:text-xl">
           Welcome to the dashboard!
         </h2>
-        <p className="dark:text-gray-400 text-gray-700 text-xl max-sm:text-base">OR</p>
-
         <div className="w-full flex flex-col gap-5">
           <InputWithLabel label="Email">
             <SimpleInput 
@@ -98,9 +96,9 @@ const LoginComponent = ({ initialError }: LoginComponentProps = {} as LoginCompo
           <p className="text-red-500 text-sm w-full text-center">{error}</p>
         )}
         
-        <p className="dark:text-gray-400 text-gray-700 text-base dark:hover:text-gray-300 hover:text-gray-600 cursor-pointer transition-colors max-sm:text-sm">
+        {/* <p className="dark:text-gray-400 text-gray-700 text-base dark:hover:text-gray-300 hover:text-gray-600 cursor-pointer transition-colors max-sm:text-sm">
           Forgot password?
-        </p>
+        </p> */}
         <button
           type="submit"
           disabled={loading}

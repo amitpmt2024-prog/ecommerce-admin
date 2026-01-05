@@ -1,4 +1,4 @@
-import { HiOutlineSave } from "react-icons/hi";
+// import { HiOutlineSave } from "react-icons/hi";
 import { Controller, useForm } from "react-hook-form"
 import { useState, useEffect } from "react";
 import { collection, addDoc, doc, getDoc, updateDoc } from "firebase/firestore";
@@ -6,8 +6,8 @@ import { collection, addDoc, doc, getDoc, updateDoc } from "firebase/firestore";
 import {
   Sidebar,
 } from "../components";
-import { AiOutlineSave } from "react-icons/ai";
-import { Link, useNavigate, useParams } from "react-router-dom";
+// import { AiOutlineSave } from "react-icons/ai";
+import {  useNavigate, useParams } from "react-router-dom";
 import { db } from "../Firebase";
 
 type FormValues = {
@@ -131,7 +131,7 @@ const CreateCategory = () => {
                 {isEditMode ? "Edit category" : "Add new category"}
               </h2>
             </div>
-            <div className="flex gap-x-2 max-[370px]:flex-col max-[370px]:gap-2 max-[370px]:items-center">
+            {/* <div className="flex gap-x-2 max-[370px]:flex-col max-[370px]:gap-2 max-[370px]:items-center">
               <button className="dark:bg-blackPrimary bg-whiteSecondary border border-gray-600 w-48 py-2 text-lg dark:hover:border-gray-500 hover:border-gray-400 duration-200 flex items-center justify-center gap-x-2">
                 <AiOutlineSave className="dark:text-whiteSecondary text-blackPrimary text-xl" />
                 <span className="dark:text-whiteSecondary text-blackPrimary font-medium">
@@ -147,7 +147,7 @@ const CreateCategory = () => {
                   Publish category
                 </span>
               </Link>
-            </div>
+            </div> */}
           </div>
           <div className="px-4 sm:px-6 lg:px-8 pb-8 pt-8 grid grid-cols-2 gap-x-10 max-xl:grid-cols-1 max-xl:gap-y-10">
             <form onSubmit={handleSubmit(submitForm)}>
@@ -213,15 +213,10 @@ const CreateCategory = () => {
                 )}
                 />
               </div>
-              <button 
-                type="submit" 
-                className="btn btn-primary mt-2"
-                disabled={loading || fetching}
-              >
-                {loading 
+
+              <button type="submit" disabled={loading || fetching} className="mt-5 border-round text-white bg-[#0f1419] hover:bg-[#0f1419]/90 focus:ring-4 focus:outline-none focus:ring-[#0f1419]/50 box-border border border-transparent font-medium leading-5 rounded-base text-sm px-4 py-2.5 text-center inline-flex items-center dark:hover:bg-[#24292F] dark:focus:ring-[#24292F]/55">  {loading 
                   ? (isEditMode ? "Updating..." : "Creating...") 
-                  : (isEditMode ? "Update Category" : "Create Category")}
-              </button>
+                  : (isEditMode ? "Update" : "Submit")}</button>
             </form>
           </div>
         </div>

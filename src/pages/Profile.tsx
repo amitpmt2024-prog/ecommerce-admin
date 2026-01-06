@@ -3,6 +3,9 @@ import { InputWithLabel, Sidebar, SimpleInput } from "../components";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Controller, useForm } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../store";
+import { updateUserData, clearUserData } from "../features/user/userSlice";
 
 type FormValues = {
   fullName: string;
@@ -35,6 +38,9 @@ const validationRules = {
 
 const Profile = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const userData = useSelector((state: RootState) => state.user.userData);
+  
   const {
     handleSubmit,
     control,
@@ -45,39 +51,28 @@ const Profile = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [userData, setUserData] = useState<{ fullName?: string; email?: string; id?: number } | null>(null);
 
-  // Load user data from localStorage on component mount
+  // Load user data from Redux on component mount
   useEffect(() => {
-    const userDataStr = localStorage.getItem("userData");
-    if (userDataStr) {
-      try {
-        const parsedUserData = JSON.parse(userDataStr);
-        setUserData(parsedUserData);
-        if (parsedUserData.fullName) {
-          setValue("fullName", parsedUserData.fullName);
-        }
-        if (parsedUserData.id) {
-          setValue("id", parsedUserData.id);
-        } else {
-          // Default to id: 1 if not found in userData
-          setValue("id", 1);
-        }
-      } catch (err) {
-        console.error("Error parsing user data:", err);
-        // Set default id if parsing fails
+    if (userData) {
+      if (userData.fullName) {
+        setValue("fullName", userData.fullName);
+      }
+      if (userData.id) {
+        setValue("id", userData.id);
+      } else {
+        // Default to id: 1 if not found in userData
         setValue("id", 1);
       }
     } else {
       // Set default id if no userData found
       setValue("id", 1);
     }
-  }, [setValue]);
+  }, [userData, setValue]);
 
   const handleLogout = () => {
-    // Remove authToken and userData from localStorage
-    localStorage.removeItem("authToken");
-    localStorage.removeItem("userData");
+    // Clear user data from Redux (which also clears localStorage)
+    dispatch(clearUserData());
     // Redirect to login page
     navigate("/login");
   };
@@ -113,18 +108,8 @@ const Profile = () => {
       await response.json();
       setSuccess("Profile updated successfully!");
       
-      // Update userData in localStorage with new fullName
-      const userDataStr = localStorage.getItem("userData");
-      if (userDataStr) {
-        try {
-          const parsedUserData = JSON.parse(userDataStr);
-          parsedUserData.fullName = data.fullName;
-          localStorage.setItem("userData", JSON.stringify(parsedUserData));
-          setUserData(parsedUserData);
-        } catch (err) {
-          console.error("Error updating user data:", err);
-        }
-      }
+      // Update userData in Redux (which also syncs with localStorage)
+      dispatch(updateUserData({ fullName: data.fullName }));
       
       setTimeout(() => {
         setSuccess(null);

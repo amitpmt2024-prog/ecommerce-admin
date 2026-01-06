@@ -16,6 +16,8 @@ import {
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginApi } from "../api/authApi";
+import { useDispatch } from "react-redux";
+import { setUserData } from "../features/user/userSlice";
 
 interface LoginComponentProps {
   initialError?: string | null;
@@ -27,6 +29,7 @@ const LoginComponent = ({ initialError }: LoginComponentProps = {} as LoginCompo
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(initialError || null);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   // Set initial error if provided
   useEffect(() => {
@@ -47,9 +50,9 @@ const LoginComponent = ({ initialError }: LoginComponentProps = {} as LoginCompo
         if (response.data.token) {
           localStorage.setItem("authToken", response.data.token);
         }
-        // Store user data in localStorage
+        // Store user data in Redux and localStorage
         if (response.data.user) {
-          localStorage.setItem("userData", JSON.stringify(response.data.user));
+          dispatch(setUserData(response.data.user));
         }
         // Redirect to home page
         navigate("/");

@@ -41,16 +41,16 @@ const ProductTable = () => {
             Product
           </th>
           <th scope="col" className="py-2 pl-0 pr-8 font-semibold table-cell">
-            SKU
+            Category
           </th>
           <th scope="col" className="py-2 pl-0 pr-8 font-semibold table-cell">
-            Status
+          Price
           </th>
           <th
             scope="col"
             className="py-2 pl-0 pr-8 font-semibold table-cell lg:pr-20"
           >
-            Price
+            Ratings
           </th>
           <th
             scope="col"
@@ -82,6 +82,10 @@ const ProductTable = () => {
                 </div>
               </div>
             </td>
+           
+            <td className="py-4 pl-0 pr-8 text-sm leading-6 dark:text-rose-200 text-rose-600 font-medium table-cell lg:pr-20">
+              {item.price}
+            </td>
             <td className="py-4 pl-0 pr-4 text-sm leading-6 sm:pr-8 lg:pr-20">
               <div className="flex items-center gap-x-2 justify-start">
                 <div
@@ -95,9 +99,6 @@ const ProductTable = () => {
                   {item.status}
                 </div>
               </div>
-            </td>
-            <td className="py-4 pl-0 pr-8 text-sm leading-6 dark:text-rose-200 text-rose-600 font-medium table-cell lg:pr-20">
-              {item.price}
             </td>
             <td className="py-4 pl-0 pr-4 text-right text-sm leading-6 dark:text-whiteSecondary text-blackPrimary table-cell pr-6 lg:pr-8">
               <div className="flex gap-x-1 justify-end">

@@ -8,6 +8,8 @@
 // Output: SimpleInput component that displays the input field
 // *********************
 
+import React from "react";
+
 interface SimpleInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   placeholder?: string;
   type?: string;
@@ -15,12 +17,16 @@ interface SimpleInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const SimpleInput: React.FC<SimpleInputProps> = (props) => {
+const SimpleInput = React.forwardRef<HTMLInputElement, SimpleInputProps>((props, ref) => {
   return (
     <input
       {...props}
-      className={`dark:bg-blackPrimary bg-white dark:text-whiteSecondary text-blackPrimary w-full h-10 indent-2 outline-none border-gray-700 border dark:focus:border-gray-600 focus:border-gray-400 dark:hover:border-gray-600 hover:border-gray-400 ${props.className}`}
+      ref={ref}
+      className={`dark:bg-blackPrimary bg-white dark:text-whiteSecondary text-blackPrimary w-full h-10 indent-2 outline-none border-gray-700 border dark:focus:border-gray-600 focus:border-gray-400 dark:hover:border-gray-600 hover:border-gray-400 ${props.className || ''}`}
     />
   );
-};
+});
+
+SimpleInput.displayName = "SimpleInput";
+
 export default SimpleInput;

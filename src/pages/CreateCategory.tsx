@@ -2,6 +2,7 @@
 import { Controller, useForm } from "react-hook-form"
 import { useState, useEffect } from "react";
 import { collection, addDoc, doc, getDoc, updateDoc } from "firebase/firestore";
+import SimpleInput from "../components/SimpleInput";
 
 import {
   Sidebar,
@@ -179,7 +180,7 @@ const CreateCategory = () => {
                   rules={validationRules.categoryTitle}
                   render={({ field }) => (
                     <>
-                      <input
+                      <SimpleInput
                         {...field}
                         type="text"
                         className="form-control"
@@ -199,7 +200,7 @@ const CreateCategory = () => {
                 </label>
                 <Controller control={control} name="categoryImage" render={({ field }) => (
                   <>
-                    <input
+                    <SimpleInput
                       {...field}
                       type="text"
                       className="form-control"

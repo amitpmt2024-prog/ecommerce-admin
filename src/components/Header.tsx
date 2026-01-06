@@ -18,6 +18,9 @@ import { Link } from "react-router-dom";
 import SearchInput from "./SearchInput";
 import { toggleDarkMode } from "../features/darkMode/darkModeSlice";
 
+const userData = localStorage.getItem("userData");
+const user = userData ? JSON.parse(userData) : null;
+
 const Header = () => {
   const dispatch = useAppDispatch();
   const { darkMode } = useAppSelector((state) => state.darkMode);
@@ -58,7 +61,7 @@ const Header = () => {
               />
               <div className="flex flex-col">
                 <p className="dark:text-whiteSecondary text-blackPrimary text-base max-xl:text-sm">
-                  Sherwood Gruninger
+                  {user?.fullName || 'User'}
                 </p>
                 <p className="dark:text-whiteSecondary text-blackPrimary text-sm max-xl:text-xs">
                   Web Developer

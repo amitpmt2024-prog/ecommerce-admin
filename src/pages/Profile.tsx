@@ -238,7 +238,7 @@ const Profile = () => {
                             {...field}
                             type="email"
                             placeholder="Your email"
-                            disabled={loading}
+                            disabled={true}
                           />
                           {errors.email && (
                             <small className="text-red-500 block mt-1">

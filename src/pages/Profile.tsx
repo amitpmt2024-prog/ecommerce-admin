@@ -6,16 +6,12 @@ import { Controller, useForm } from "react-hook-form";
 
 type FormValues = {
   fullName: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
+  id:number;
 }
 
 const defaultValues: FormValues = {
   fullName: '',
-  email: '',
-  password: '',
-  confirmPassword: ''
+  id: 0,
 }
 
 const validationRules = {
@@ -26,31 +22,11 @@ const validationRules = {
       message: "Full name must be at least 2 characters long",
     },
   },
-  email: {
-    required: "Email is required",
-    pattern: {
-      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-      message: "Invalid email address",
-    },
-  },
-  password: {
-    validate: (value: string) => {
-      if (!value || value === "") {
-        return true; // Optional field
-      }
-      if (value.length < 6) {
-        return "Password must be at least 6 characters long";
-      }
-      return true;
-    },
-  },
-  confirmPassword: {
-    validate: (value: string, formValues: { password: string }) => {
-      if (!formValues.password) {
-        return true; // If password is empty, confirm password is optional
-      }
-      if (value !== formValues.password) {
-        return "Passwords do not match";
+  id: {
+    required: "ID is required",
+    validate: (value: number) => {
+      if (!value || value <= 0) {
+        return "Valid ID is required";
       }
       return true;
     },
@@ -63,14 +39,13 @@ const Profile = () => {
     handleSubmit,
     control,
     formState: { errors },
-    reset,
     setValue
   } = useForm<FormValues>({ defaultValues });
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [userData, setUserData] = useState<{ fullName?: string; email?: string } | null>(null);
+  const [userData, setUserData] = useState<{ fullName?: string; email?: string; id?: number } | null>(null);
 
   // Load user data from localStorage on component mount
   useEffect(() => {
@@ -82,12 +57,20 @@ const Profile = () => {
         if (parsedUserData.fullName) {
           setValue("fullName", parsedUserData.fullName);
         }
-        if (parsedUserData.email) {
-          setValue("email", parsedUserData.email);
+        if (parsedUserData.id) {
+          setValue("id", parsedUserData.id);
+        } else {
+          // Default to id: 1 if not found in userData
+          setValue("id", 1);
         }
       } catch (err) {
         console.error("Error parsing user data:", err);
+        // Set default id if parsing fails
+        setValue("id", 1);
       }
+    } else {
+      // Set default id if no userData found
+      setValue("id", 1);
     }
   }, [setValue]);
 
@@ -107,13 +90,19 @@ const Profile = () => {
     try {
       const authToken = localStorage.getItem("authToken");
       
-      const response = await fetch("http://localhost:3000/info?id=1", {
+      // Prepare request body with only id and fullName
+      const requestBody = {
+        id: data.id,
+        fullName: data.fullName,
+      };
+      
+      const response = await fetch("http://localhost:3000/users/update", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           ...(authToken && { Authorization: `Bearer ${authToken}` }),
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(requestBody),
       });
 
       if (!response.ok) {
@@ -123,7 +112,19 @@ const Profile = () => {
 
       await response.json();
       setSuccess("Profile updated successfully!");
-      reset();
+      
+      // Update userData in localStorage with new fullName
+      const userDataStr = localStorage.getItem("userData");
+      if (userDataStr) {
+        try {
+          const parsedUserData = JSON.parse(userDataStr);
+          parsedUserData.fullName = data.fullName;
+          localStorage.setItem("userData", JSON.stringify(parsedUserData));
+          setUserData(parsedUserData);
+        } catch (err) {
+          console.error("Error updating user data:", err);
+        }
+      }
       
       setTimeout(() => {
         setSuccess(null);
@@ -227,28 +228,15 @@ const Profile = () => {
                     />
                   </InputWithLabel>
 
-                  <InputWithLabel label="Your email">
-                    <Controller
-                      control={control}
-                      name="email"
-                      rules={validationRules.email}
-                      render={({ field }) => (
-                        <>
-                          <SimpleInput
-                            {...field}
-                            type="email"
-                            placeholder="Your email"
-                            disabled={true}
-                          />
-                          {errors.email && (
-                            <small className="text-red-500 block mt-1">
-                              {errors.email.message}
-                            </small>
-                          )}
-                        </>
-                      )}
-                    />
-                  </InputWithLabel>
+                  {/* Hidden ID field - not displayed but included in form */}
+                  <Controller
+                    control={control}
+                    name="id"
+                    rules={validationRules.id}
+                    render={({ field }) => (
+                      <input type="hidden" {...field} />
+                    )}
+                  />
 {/* 
                   <InputWithLabel label="New password">
                     <Controller

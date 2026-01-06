@@ -42,9 +42,14 @@ const LoginComponent = ({ initialError }: LoginComponentProps = {} as LoginCompo
 
     try {
       const response = await loginApi({ email, password });
-      if (response.message === "Signed in successfully") {
-        if (response.data) {
-          localStorage.setItem("authToken", response.data);
+      if (response.status && response.data) {
+        // Store token in localStorage
+        if (response.data.token) {
+          localStorage.setItem("authToken", response.data.token);
+        }
+        // Store user data in localStorage
+        if (response.data.user) {
+          localStorage.setItem("userData", JSON.stringify(response.data.user));
         }
         // Redirect to home page
         navigate("/");

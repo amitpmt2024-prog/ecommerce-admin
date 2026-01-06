@@ -14,14 +14,15 @@ export interface LoginRequest {
 }
 
 export interface LoginResponse {
-  success: boolean;
+  status: boolean;
   message: string;
-  token?: string;
-  data?: string;
-  user?: {
-    id: string;
-    email: string;
-    name: string;
+  data?: {
+    token: string;
+    user: {
+      email: string;
+      fullName: string;
+      role: string | null;
+    };
   };
 }
 
@@ -34,7 +35,7 @@ export const loginApi = async (credentials: LoginRequest): Promise<LoginResponse
   // Validate input
   if (!credentials.email || !credentials.password) {
     return {
-      success: false,
+      status: false,
       message: "Email and password are required",
     };
   }
@@ -56,7 +57,7 @@ export const loginApi = async (credentials: LoginRequest): Promise<LoginResponse
     if (!response.ok && response.status === 0) {
       // Status 0 usually indicates a CORS error
       return {
-        success: false,
+        status: false,
         message: "CORS Error: The server is blocking requests from this origin. Please enable CORS on your backend server.",
       };
     }
@@ -67,29 +68,23 @@ export const loginApi = async (credentials: LoginRequest): Promise<LoginResponse
     } catch (jsonError) {
       // If JSON parsing fails, it might be a CORS or network issue
       return {
-        success: false,
+        status: false,
         message: "CORS Error: Unable to parse response. Please check your backend CORS configuration.",
       };
     }
 
     // Handle successful response
-    if (response.ok) {
+    if (response.ok && data.status) {
       return {
-        success: true,
+        status: true,
         message: data.message || "Login successful",
-        token: data.token || data.accessToken || data.data?.token,
-        data: data.data || data.data?.data || data.data?.token,
-        user: data.user || data.data?.user || {
-          id: data.id || data.userId || "",
-          email: credentials.email,
-          name: data.name || data.username || "User",
-        },
+        data: data.data,
       };
     }
 
     // Handle error response
     return {
-      success: false,
+      status: false,
       message: data.message || data.error || "Invalid email or password. Please try again.",
     };
   } catch (error) {
@@ -108,19 +103,19 @@ export const loginApi = async (credentials: LoginRequest): Promise<LoginResponse
       
       if (isCorsError) {
         return {
-          success: false,
+          status: false,
           message: "CORS Error: The server is not allowing requests from this origin. Please check your backend CORS configuration.",
         };
       }
       
       return {
-        success: false,
+        status: false,
         message: "Unable to connect to the server. Please check your connection and ensure the backend is running.",
       };
     }
 
     return {
-      success: false,
+      status: false,
       message: "An error occurred during login. Please try again.",
     };
   }

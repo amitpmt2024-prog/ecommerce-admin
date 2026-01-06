@@ -22,7 +22,7 @@ interface LoginComponentProps {
 }
 
 const LoginComponent = ({ initialError }: LoginComponentProps = {} as LoginComponentProps) => {
-  const [email, setEmail] = useState("johndoe@gmail.com");
+  const [email, setEmail] = useState("amitpmt2024@gmail.com");
   const [password, setPassword] = useState("Test@123");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(initialError || null);
@@ -42,11 +42,9 @@ const LoginComponent = ({ initialError }: LoginComponentProps = {} as LoginCompo
 
     try {
       const response = await loginApi({ email, password });
-      
-      if (response.success) {
-        // Store authentication data in localStorage
-        if (response.token) {
-          localStorage.setItem("authToken", response.token);
+      if (response.message === "Signed in successfully") {
+        if (response.data) {
+          localStorage.setItem("authToken", response.data);
         }
         // Redirect to home page
         navigate("/");

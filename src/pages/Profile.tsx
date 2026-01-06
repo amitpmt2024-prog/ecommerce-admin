@@ -1,14 +1,23 @@
-import { HiOutlineSave, HiOutlineUpload } from "react-icons/hi";
+import { HiOutlineSave, HiOutlineUpload, HiOutlineLogout } from "react-icons/hi";
 import { InputWithLabel, Sidebar, SimpleInput, WhiteButton } from "../components";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
+  const navigate = useNavigate();
   const [inputObject, setInputObject] = useState({
     username: "",
     email: "",
     password: "",
     confirmPassword: "",
   });
+
+  const handleLogout = () => {
+    // Remove authToken from localStorage
+    localStorage.removeItem("authToken");
+    // Redirect to login page
+    navigate("/login");
+  };
   return (
     <div className="h-auto border-t border-blackSecondary border-1 flex dark:bg-blackPrimary bg-whiteSecondary">
       <Sidebar />
@@ -21,7 +30,8 @@ const Profile = () => {
               </h2>
             </div>
             {/* Profile update button or any other action */}
-            <WhiteButton
+            <div className="flex gap-x-2 max-[370px]:flex-col max-[370px]:gap-2 max-[370px]:items-center">
+              <WhiteButton
                 link="/profile"
                 textSize="lg"
                 width="48"
@@ -30,6 +40,14 @@ const Profile = () => {
               >
                 <HiOutlineSave className="dark:text-blackPrimary text-whiteSecondary text-xl" />
               </WhiteButton>
+              <button
+                onClick={handleLogout}
+                className="dark:bg-red-600 bg-red-600 hover:bg-red-700 dark:hover:bg-red-700 w-48 py-2 text-lg duration-200 flex items-center justify-center gap-x-2 text-white font-semibold"
+              >
+                <HiOutlineLogout className="text-white text-xl" />
+                <span>Logout</span>
+              </button>
+            </div>
           </div>
           <div className="px-4 sm:px-6 lg:px-8 pb-8 pt-8">
             {/* Profile details section */}

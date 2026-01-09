@@ -100,6 +100,15 @@ const Profile = () => {
         body: JSON.stringify(requestBody),
       });
 
+      // Check for unauthorized response
+      if (response.status === 401 || response.status === 403) {
+        // Clear auth data and redirect to login
+        localStorage.removeItem("authToken");
+        localStorage.removeItem("userData");
+        window.location.href = "/login?error=Your session has expired. Please login again.";
+        return;
+      }
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.message || `HTTP error! status: ${response.status}`);

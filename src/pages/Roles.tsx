@@ -1,9 +1,10 @@
-import { Pagination, RowsPerPage, Sidebar, WhiteButton } from "../components";
-import { HiOutlinePlus } from "react-icons/hi";
+import { Pagination, RowsPerPage, Sidebar, WhiteButton, ConfirmModal } from "../components";
+import { HiOutlinePlus, HiOutlinePencil, HiOutlineTrash } from "react-icons/hi";
 import { HiOutlineChevronRight } from "react-icons/hi";
 import { HiOutlineSearch } from "react-icons/hi";
+import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { getRolesApi } from "../api/rolesApi";
+import { getRolesApi, deleteRoleApi } from "../api/rolesApi";
 import { Role } from "../api/rolesApi";
 
 const Roles = () => {
@@ -11,6 +12,10 @@ const Roles = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [roleToDelete, setRoleToDelete] = useState<{ id: string; name: string } | null>(null);
 
   useEffect(() => {
     const fetchRoles = async () => {
@@ -45,6 +50,49 @@ const Roles = () => {
     role.name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const handleDeleteClick = (roleId: string, roleName: string) => {
+    setRoleToDelete({ id: roleId, name: roleName });
+    setShowDeleteModal(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!roleToDelete) return;
+
+    setDeletingId(roleToDelete.id);
+    setDeleteError(null);
+    setShowDeleteModal(false);
+
+    try {
+      const response = await deleteRoleApi(roleToDelete.id);
+      
+      if (response.status) {
+        // Remove the deleted role from the list
+        setRoles((prevRoles) => prevRoles.filter((role) => role.id !== roleToDelete.id));
+      } else {
+        setDeleteError(response.message || "Failed to delete role. Please try again.");
+        // Clear error after 3 seconds
+        setTimeout(() => {
+          setDeleteError(null);
+        }, 3000);
+      }
+    } catch (err) {
+      console.error("Error deleting role: ", err);
+      setDeleteError("An error occurred while deleting the role. Please try again.");
+      // Clear error after 3 seconds
+      setTimeout(() => {
+        setDeleteError(null);
+      }, 3000);
+    } finally {
+      setDeletingId(null);
+      setRoleToDelete(null);
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setShowDeleteModal(false);
+    setRoleToDelete(null);
+  };
+
   return (
     <div className="h-auto border-t border-blackSecondary border-1 flex dark:bg-blackPrimary bg-whiteSecondary">
       <Sidebar />
@@ -60,6 +108,9 @@ const Roles = () => {
                 <HiOutlineChevronRight className="text-lg" />{" "}
                 <span>All Roles</span>
               </p>
+            </div>
+            <div className="flex gap-x-2 max-[370px]:flex-col max-[370px]:gap-2 max-[370px]:items-center">
+              <WhiteButton link="/roles/create-role" text="Create Role" textSize="lg" py="2" width="48"><HiOutlinePlus className="dark:text-blackPrimary text-whiteSecondary" /></WhiteButton>
             </div>
           </div>
           <div className="px-4 sm:px-6 lg:px-8 flex justify-between items-center mt-5 max-sm:flex-col max-sm:gap-2">
@@ -103,12 +154,18 @@ const Roles = () => {
                     >
                       ID
                     </th>
+                    <th
+                      scope="col"
+                      className="py-2 pl-0 pr-4 text-right font-semibold table-cell sm:pr-6 lg:pr-8"
+                    >
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/5">
                   {filteredRoles.length === 0 ? (
                     <tr>
-                      <td colSpan={2} className="py-8 text-center">
+                      <td colSpan={3} className="py-8 text-center">
                         <div className="text-sm dark:text-whiteSecondary text-blackPrimary">
                           {searchTerm ? "No roles found matching your search." : "No roles found."}
                         </div>
@@ -131,10 +188,43 @@ const Roles = () => {
                             </div>
                           </div>
                         </td>
+                        <td className="py-4 pl-0 pr-4 text-right text-sm leading-6 dark:text-whiteSecondary text-blackPrimary table-cell pr-6 lg:pr-8">
+                          <div className="flex gap-x-1 justify-end">
+                            <Link
+                              to={`/roles/${role.id}`}
+                              className="dark:bg-blackPrimary dark:text-whiteSecondary text-blackPrimary border border-gray-600 w-8 h-8 block flex justify-center items-center cursor-pointer dark:hover:border-gray-500 hover:border-gray-400"
+                            >
+                              <HiOutlinePencil className="text-lg" />
+                            </Link>
+                            <button
+                              onClick={() => handleDeleteClick(role.id, role.name)}
+                              disabled={deletingId === role.id}
+                              className="dark:bg-blackPrimary bg-whiteSecondary dark:text-whiteSecondary text-blackPrimary border border-gray-600 w-8 h-8 block flex justify-center items-center cursor-pointer dark:hover:border-gray-500 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                              title="Delete role"
+                            >
+                              {deletingId === role.id ? (
+                                <span className="text-xs">...</span>
+                              ) : (
+                                <HiOutlineTrash className="text-lg" />
+                              )}
+                            </button>
+                          </div>
+                        </td>
                       </tr>
                     ))
                   )}
                 </tbody>
+                {deleteError && (
+                  <tfoot>
+                    <tr>
+                      <td colSpan={3} className="px-4 sm:px-6 lg:px-8 py-2">
+                        <div className="text-sm text-red-500 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded p-2">
+                          {deleteError}
+                        </div>
+                      </td>
+                    </tr>
+                  </tfoot>
+                )}
               </table>
             </div>
           )}
@@ -144,6 +234,17 @@ const Roles = () => {
           </div>
         </div>
       </div>
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Role"
+        message={`Are you sure you want to delete "${roleToDelete?.name}"? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        isLoading={deletingId !== null}
+        confirmButtonClass="bg-red-600 hover:bg-red-700"
+      />
     </div>
   );
 };

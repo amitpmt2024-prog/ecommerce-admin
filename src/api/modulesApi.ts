@@ -8,6 +8,9 @@
 // API Base URL - Update this with your backend API URL
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
 
+// Import auth utilities
+import { checkUnauthorized } from "../utils/authUtils";
+
 export interface Module {
   id: string;
   name: string;
@@ -72,6 +75,14 @@ export const getModulesApi = async (params?: GetModulesRequest): Promise<Modules
       },
       body: JSON.stringify(requestBody),
     });
+
+    // Check for unauthorized response
+    if (checkUnauthorized(response)) {
+      return {
+        status: false,
+        message: "Unauthorized. Please login again.",
+      };
+    }
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
@@ -144,6 +155,14 @@ export const createModuleApi = async (moduleData: CreateModuleRequest): Promise<
         roleIds: moduleData.roleIds || [],
       }),
     });
+
+    // Check for unauthorized response
+    if (checkUnauthorized(response)) {
+      return {
+        status: false,
+        message: "Unauthorized. Please login again.",
+      };
+    }
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));

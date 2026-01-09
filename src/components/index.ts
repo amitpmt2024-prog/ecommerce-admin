@@ -34,3 +34,4 @@ export { default as ThirdPartyAuthButton } from "./ThirdPartyAuthButton";
 export { default as LoginComponent } from "./LoginComponent";
 export { default as RegisterComponent } from "./RegisterComponent";
 export { default as ProtectedRoute } from "./ProtectedRoute";
+export { default as ConfirmModal } from "./ConfirmModal";

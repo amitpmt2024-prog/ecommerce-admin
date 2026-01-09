@@ -8,10 +8,12 @@ import {
   CreateOrder,
   CreateProduct,
   CreateReview,
+  CreateRole,
   CreateUser,
   EditOrder,
   EditProduct,
   EditReview,
+  EditRole,
   EditUser,
   FAQs,
   HelpDesk,
@@ -104,6 +106,14 @@ const router = createBrowserRouter([
       {
         path: "/roles",
         element: (<ProtectedRoute><Roles /></ProtectedRoute>),
+      },
+      {
+        path: "/roles/create-role",
+        element: (<ProtectedRoute><CreateRole /></ProtectedRoute>),
+      },
+      {
+        path: "/roles/:id",
+        element: (<ProtectedRoute><EditRole /></ProtectedRoute>),
       },
       {
         path: "/orders",

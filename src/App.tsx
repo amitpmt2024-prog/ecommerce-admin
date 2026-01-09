@@ -2,6 +2,7 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import {
   Categories,
   CreateCategory,
+  CreateFAQ,
   CreateOrder,
   CreateProduct,
   CreateReview,
@@ -10,6 +11,7 @@ import {
   EditProduct,
   EditReview,
   EditUser,
+  FAQs,
   HelpDesk,
   HomeLayout,
   Landing,
@@ -71,6 +73,18 @@ const router = createBrowserRouter([
       {
         path: "/categories/:id",
         element: (<ProtectedRoute><CreateCategory /></ProtectedRoute>),
+      },
+      {
+        path: "/faqs",
+        element: (<ProtectedRoute><FAQs /></ProtectedRoute>),
+      },
+      {
+        path: "/faqs/create-faq",
+        element: (<ProtectedRoute><CreateFAQ /></ProtectedRoute>),
+      },
+      {
+        path: "/faqs/:id",
+        element: (<ProtectedRoute><CreateFAQ /></ProtectedRoute>),
       },
       {
         path: "/orders",

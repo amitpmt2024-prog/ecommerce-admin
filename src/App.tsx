@@ -1,7 +1,9 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import {
   Categories,
+  CMS,
   CreateCategory,
+  CreateCMS,
   CreateFAQ,
   CreateOrder,
   CreateProduct,
@@ -85,6 +87,18 @@ const router = createBrowserRouter([
       {
         path: "/faqs/:id",
         element: (<ProtectedRoute><CreateFAQ /></ProtectedRoute>),
+      },
+      {
+        path: "/cms",
+        element: (<ProtectedRoute><CMS /></ProtectedRoute>),
+      },
+      {
+        path: "/cms/create-cms",
+        element: (<ProtectedRoute><CreateCMS /></ProtectedRoute>),
+      },
+      {
+        path: "/cms/:id",
+        element: (<ProtectedRoute><CreateCMS /></ProtectedRoute>),
       },
       {
         path: "/orders",

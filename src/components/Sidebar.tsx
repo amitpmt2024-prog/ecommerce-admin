@@ -9,7 +9,7 @@
 // *********************
 
 import {  HiOutlineHome,  } from "react-icons/hi";
-import { HiOutlineDevicePhoneMobile, HiOutlineQuestionMarkCircle } from "react-icons/hi2";
+import { HiOutlineDevicePhoneMobile, HiOutlineQuestionMarkCircle, HiOutlineDocumentText } from "react-icons/hi2";
 import { HiOutlineTag } from "react-icons/hi";
 import { HiOutlineInformationCircle } from "react-icons/hi";
 import { useAppDispatch, useAppSelector } from "../hooks";
@@ -78,6 +78,15 @@ const Sidebar = () => {
           >
             <HiOutlineQuestionMarkCircle className="text-xl" />
             <span className="text-lg">FAQs</span>
+          </NavLink>
+          <NavLink
+            to="/cms"
+            className={(isActiveObj) =>
+              isActiveObj.isActive ? navActiveClass : navInactiveClass
+            }
+          >
+            <HiOutlineDocumentText className="text-xl" />
+            <span className="text-lg">CMS</span>
           </NavLink>
           {/* <NavLink
             to="/orders"

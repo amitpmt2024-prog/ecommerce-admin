@@ -23,6 +23,7 @@ import {
   Products,
   Profile,
   Reviews,
+  Roles,
   Users,
 } from "./pages";
 import { ProtectedRoute } from "./components";
@@ -99,6 +100,10 @@ const router = createBrowserRouter([
       {
         path: "/cms/:id",
         element: (<ProtectedRoute><CreateCMS /></ProtectedRoute>),
+      },
+      {
+        path: "/roles",
+        element: (<ProtectedRoute><Roles /></ProtectedRoute>),
       },
       {
         path: "/orders",

@@ -9,6 +9,7 @@ export { default as FAQs } from "./FAQs";
 export { default as Orders } from "./Orders";
 export { default as Users } from "./Users";
 export { default as Reviews } from "./Reviews";
+export { default as Roles } from "./Roles";
 export { default as CreateProduct } from "./CreateProduct";
 export { default as CreateCategory } from "./CreateCategory";
 export { default as CreateOrder } from "./CreateOrder";

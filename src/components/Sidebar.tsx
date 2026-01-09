@@ -9,7 +9,7 @@
 // *********************
 
 import {  HiOutlineHome,  } from "react-icons/hi";
-import { HiOutlineDevicePhoneMobile, HiOutlineQuestionMarkCircle, HiOutlineDocumentText } from "react-icons/hi2";
+import { HiOutlineDevicePhoneMobile, HiOutlineQuestionMarkCircle, HiOutlineDocumentText, HiOutlineUserGroup } from "react-icons/hi2";
 import { HiOutlineTag } from "react-icons/hi";
 import { HiOutlineInformationCircle } from "react-icons/hi";
 import { useAppDispatch, useAppSelector } from "../hooks";
@@ -88,54 +88,15 @@ const Sidebar = () => {
             <HiOutlineDocumentText className="text-xl" />
             <span className="text-lg">CMS</span>
           </NavLink>
-          {/* <NavLink
-            to="/orders"
+          <NavLink
+            to="/roles"
             className={(isActiveObj) =>
               isActiveObj.isActive ? navActiveClass : navInactiveClass
             }
           >
-            <HiOutlineTruck className="text-xl" />
-            <span className="text-lg">Orders</span>
-          </NavLink> */}
-          {/* <NavLink
-            to="/users"
-            className={(isActiveObj) =>
-              isActiveObj.isActive ? navActiveClass : navInactiveClass
-            }
-          >
-            <HiOutlineUser className="text-xl" />
-            <span className="text-lg">Users</span>
-          </NavLink> */}
-          {/* <NavLink
-            to="/reviews"
-            className={(isActiveObj) =>
-              isActiveObj.isActive ? navActiveClass : navInactiveClass
-            }
-          >
-            <HiOutlineStar className="text-xl" />
-            <span className="text-lg">Reviews</span>
-          </NavLink> */}
-
-          {/* <div
-            onClick={() => setIsAuthOpen(() => !isAuthOpen)}
-            className="block flex items-center self-stretch gap-4 py-4 px-6 dark:bg-blackPrimary dark:hover:bg-blackSecondary cursor-pointer max-xl:py-3 dark:text-whiteSecondary hover:bg-white text-blackPrimary bg-whiteSecondary"
-          >
-            <HiUserGroup className="text-xl" />
-            <span className="text-lg">Auth</span>
-          </div>
-          {isAuthOpen && (
-            <div>
-              <NavLink
-                to="/login"
-                className={(isActiveObj) =>
-                  isActiveObj.isActive ? navActiveClass : navInactiveClass
-                }
-              >
-                <HiLogin className="text-xl" />
-                <span className="text-lg">Login</span>
-              </NavLink>
-            </div>
-          )} */}
+            <HiOutlineUserGroup className="text-xl" />
+            <span className="text-lg">Roles</span>
+          </NavLink>
         </div>
 
         <div className="absolute bottom-0 border-1 border-t dark:border-blackSecondary border-blackSecondary w-full">

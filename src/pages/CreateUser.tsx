@@ -97,12 +97,16 @@ const CreateUser = () => {
     setSuccess(null);
 
     try {
+      console.log("Form data submitted:", { ...data, password: "***" }); // Log without password
+      
       const response = await createUserApi({
         fullName: data.fullName,
         email: data.email,
         password: data.password,
-        roleId: data.roleId,
+        roleId: data.roleId, // This will be converted to number in the API
       });
+      
+      console.log("Create user API response:", response);
 
       if (response.status && response.data) {
         setSuccess("User created successfully!");

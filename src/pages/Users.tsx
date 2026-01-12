@@ -2,12 +2,13 @@ import { Pagination, RowsPerPage, Sidebar, WhiteButton, ConfirmModal } from "../
 import { HiOutlinePlus, HiOutlinePencil, HiOutlineTrash } from "react-icons/hi";
 import { HiOutlineChevronRight } from "react-icons/hi";
 import { HiOutlineSearch } from "react-icons/hi";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { getUsersApi, deleteUserApi } from "../api/usersApi";
 import { User } from "../api/usersApi";
 
 const Users = () => {
+  const navigate = useNavigate();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -16,6 +17,11 @@ const Users = () => {
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [userToDelete, setUserToDelete] = useState<{ id: string; fullName: string } | null>(null);
+  
+  // Handle edit click - pass user data via navigation state
+  const handleEditClick = (user: User) => {
+    navigate(`/users/${user.id}`, { state: { userData: user } });
+  };
   
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -275,12 +281,13 @@ const Users = () => {
                         </td>
                         <td className="py-4 pl-0 pr-4 text-right text-sm leading-6 dark:text-whiteSecondary text-blackPrimary table-cell pr-6 lg:pr-8">
                           <div className="flex gap-x-1 justify-end">
-                            <Link
-                              to={`/users/${user.id}`}
+                            <button
+                              onClick={() => handleEditClick(user)}
                               className="dark:bg-blackPrimary dark:text-whiteSecondary text-blackPrimary border border-gray-600 w-8 h-8 block flex justify-center items-center cursor-pointer dark:hover:border-gray-500 hover:border-gray-400"
+                              title="Edit user"
                             >
                               <HiOutlinePencil className="text-lg" />
-                            </Link>
+                            </button>
                             <button
                               onClick={() => handleDeleteClick(user.id, user.fullName)}
                               disabled={deletingId === user.id}

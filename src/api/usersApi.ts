@@ -47,7 +47,7 @@ export interface CreateUserRequest {
   fullName: string;
   email: string;
   password: string;
-  roleId: string;
+  roleId: string | number; // Can be string from form or number for API
 }
 
 export interface CreateUserResponse {
@@ -64,9 +64,7 @@ export interface GetUserResponse {
 
 export interface UpdateUserRequest {
   fullName: string;
-  email: string;
-  password?: string; // Optional for updates
-  roleId: string;
+  roleId: string | number; // Can be string from form or number for API
 }
 
 export interface UpdateUserResponse {
@@ -243,7 +241,9 @@ export const createUserApi = async (userData: CreateUserRequest): Promise<Create
     };
   }
   
-  if (!userData.roleId || userData.roleId.trim() === "") {
+  // Validate roleId - handle both string and number
+  const roleIdValue = typeof userData.roleId === 'string' ? userData.roleId.trim() : userData.roleId;
+  if (!roleIdValue || (typeof roleIdValue === 'string' && roleIdValue === "")) {
     return {
       status: false,
       message: "Role is required",
@@ -253,18 +253,32 @@ export const createUserApi = async (userData: CreateUserRequest): Promise<Create
   try {
     const authToken = getAuthToken();
     
+    // Convert roleId to number if it's a string
+    const roleIdNumber = typeof roleIdValue === 'string' ? parseInt(roleIdValue, 10) : roleIdValue;
+    
+    if (isNaN(roleIdNumber)) {
+      return {
+        status: false,
+        message: "Invalid role ID",
+      };
+    }
+    
+    const requestBody = {
+      fullName: userData.fullName,
+      email: userData.email,
+      password: userData.password,
+      roleId: roleIdNumber, // Send as number
+    };
+    
+    console.log("Creating user with data:", { ...requestBody, password: "***" }); // Log without password
+    
     const response = await fetch(`${API_BASE_URL}/users/add`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         ...(authToken && { Authorization: `Bearer ${authToken}` }),
       },
-      body: JSON.stringify({
-        fullName: userData.fullName,
-        email: userData.email,
-        password: userData.password,
-        roleId: userData.roleId,
-      }),
+      body: JSON.stringify(requestBody),
     });
 
     // Check for unauthorized response
@@ -277,13 +291,15 @@ export const createUserApi = async (userData: CreateUserRequest): Promise<Create
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
+      console.error("Create user API error response:", errorData);
       return {
         status: false,
-        message: errorData.message || `HTTP error! status: ${response.status}`,
+        message: errorData.message || errorData.error || `HTTP error! status: ${response.status}`,
       };
     }
 
     const data = await response.json();
+    console.log("Create user API success response:", data);
     
     return {
       status: true,
@@ -369,7 +385,7 @@ export const getUserApi = async (userId: string): Promise<GetUserResponse> => {
 /**
  * Update a user
  * @param userId - User ID
- * @param userData - User data (fullName, email, password (optional), roleId)
+ * @param userData - User data (fullName, roleId)
  * @returns Promise with update user response
  */
 export const updateUserApi = async (userId: string, userData: UpdateUserRequest): Promise<UpdateUserResponse> => {
@@ -381,14 +397,9 @@ export const updateUserApi = async (userId: string, userData: UpdateUserRequest)
     };
   }
   
-  if (!userData.email || userData.email.trim() === "") {
-    return {
-      status: false,
-      message: "Email is required",
-    };
-  }
-  
-  if (!userData.roleId || userData.roleId.trim() === "") {
+  // Validate roleId - handle both string and number
+  const roleIdValue = typeof userData.roleId === 'string' ? userData.roleId.trim() : userData.roleId;
+  if (!roleIdValue || (typeof roleIdValue === 'string' && roleIdValue === "")) {
     return {
       status: false,
       message: "Role is required",
@@ -398,16 +409,22 @@ export const updateUserApi = async (userId: string, userData: UpdateUserRequest)
   try {
     const authToken = getAuthToken();
     
-    const updateData: any = {
+    // Convert roleId to number if it's a string
+    const roleIdNumber = typeof roleIdValue === 'string' ? parseInt(roleIdValue, 10) : roleIdValue;
+    
+    if (isNaN(roleIdNumber)) {
+      return {
+        status: false,
+        message: "Invalid role ID",
+      };
+    }
+    
+    const requestBody = {
       fullName: userData.fullName,
-      email: userData.email,
-      roleId: userData.roleId,
+      roleId: roleIdNumber, // Send as number
     };
     
-    // Only include password if provided
-    if (userData.password && userData.password.trim() !== "") {
-      updateData.password = userData.password;
-    }
+    console.log("Updating user with data:", requestBody);
     
     const response = await fetch(`${API_BASE_URL}/users/update/${userId}`, {
       method: "PUT",
@@ -415,7 +432,7 @@ export const updateUserApi = async (userId: string, userData: UpdateUserRequest)
         "Content-Type": "application/json",
         ...(authToken && { Authorization: `Bearer ${authToken}` }),
       },
-      body: JSON.stringify(updateData),
+      body: JSON.stringify(requestBody),
     });
 
     // Check for unauthorized response
@@ -428,13 +445,15 @@ export const updateUserApi = async (userId: string, userData: UpdateUserRequest)
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
+      console.error("Update user API error response:", errorData);
       return {
         status: false,
-        message: errorData.message || `HTTP error! status: ${response.status}`,
+        message: errorData.message || errorData.error || `HTTP error! status: ${response.status}`,
       };
     }
 
     const data = await response.json();
+    console.log("Update user API success response:", data);
     
     return {
       status: true,
@@ -468,10 +487,11 @@ export const deleteUserApi = async (userId: string): Promise<DeleteUserResponse>
   try {
     const authToken = getAuthToken();
     
+    console.log("Deleting user with ID:", userId);
+    
     const response = await fetch(`${API_BASE_URL}/users/delete/${userId}`, {
       method: "DELETE",
       headers: {
-        "Content-Type": "application/json",
         ...(authToken && { Authorization: `Bearer ${authToken}` }),
       },
     });
@@ -486,13 +506,23 @@ export const deleteUserApi = async (userId: string): Promise<DeleteUserResponse>
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
+      console.error("Delete user API error response:", errorData);
       return {
         status: false,
-        message: errorData.message || `HTTP error! status: ${response.status}`,
+        message: errorData.message || errorData.error || `HTTP error! status: ${response.status}`,
       };
     }
 
-    const data = await response.json();
+    // Some APIs return empty body on successful DELETE, handle both cases
+    let data;
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+      data = await response.json();
+    } else {
+      data = {};
+    }
+    
+    console.log("Delete user API success response:", data);
     
     return {
       status: true,

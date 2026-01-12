@@ -14,7 +14,10 @@ import { checkUnauthorized } from "../utils/authUtils";
 export interface Role {
   id: string;
   name: string;
-  roleModules?: Array<{ module: { id: string; name: string } }>; // Nested structure: roleModules.module.name
+  roleModules?: Array<{ 
+    moduleId?: string | number; // Module ID field from roleModules
+    module?: { id: string; name: string } // Nested module object
+  }>; // Nested structure: roleModules.moduleId or roleModules.module.name
   modules?: Array<{ id: string; name: string }> | string[]; // Alternative structure: direct modules array
   [key: string]: any; // Allow for additional properties
 }
@@ -29,6 +32,12 @@ export interface RolesResponse {
   status: boolean;
   message: string;
   data?: Role[];
+  pagination?: {
+    currentPage: number;
+    totalPages: number;
+    totalItems: number;
+    itemsPerPage: number;
+  };
 }
 
 export interface CreateRoleRequest {
@@ -125,10 +134,61 @@ export const getRolesApi = async (params?: GetRolesRequest): Promise<RolesRespon
       rolesData = data.roles;
     }
     
+    // Extract pagination metadata - check multiple possible response formats
+    let pagination;
+    
+    // Format 1: Direct pagination object
+    if (data.pagination) {
+      pagination = {
+        currentPage: data.pagination.currentPage || data.pagination.page || requestBody.page || 1,
+        totalPages: data.pagination.totalPages || data.pagination.totalPage || Math.ceil((data.pagination.total || data.pagination.totalItems || 0) / (data.pagination.itemsPerPage || data.pagination.limit || requestBody.limit || 10)),
+        totalItems: data.pagination.total || data.pagination.totalItems || 0,
+        itemsPerPage: data.pagination.itemsPerPage || data.pagination.limit || requestBody.limit || 10,
+      };
+    }
+    // Format 2: Meta object
+    else if (data.meta) {
+      pagination = {
+        currentPage: data.meta.currentPage || data.meta.page || requestBody.page || 1,
+        totalPages: data.meta.totalPages || data.meta.totalPage || Math.ceil((data.meta.total || data.meta.totalItems || 0) / (data.meta.itemsPerPage || data.meta.limit || requestBody.limit || 10)),
+        totalItems: data.meta.total || data.meta.totalItems || 0,
+        itemsPerPage: data.meta.itemsPerPage || data.meta.limit || requestBody.limit || 10,
+      };
+    }
+    // Format 3: Pagination fields at root level
+    else if (data.totalPages || data.total || data.totalItems) {
+      const total = data.total || data.totalItems || 0;
+      const limit = data.limit || data.itemsPerPage || requestBody.limit || 10;
+      pagination = {
+        currentPage: data.currentPage || data.page || requestBody.page || 1,
+        totalPages: data.totalPages || data.totalPage || Math.ceil(total / limit),
+        totalItems: total,
+        itemsPerPage: limit,
+      };
+    }
+    // Format 4: Check for count and calculate
+    else if (data.count !== undefined) {
+      const limit = requestBody.limit || 10;
+      pagination = {
+        currentPage: requestBody.page || 1,
+        totalPages: Math.ceil(data.count / limit),
+        totalItems: data.count,
+        itemsPerPage: limit,
+      };
+    }
+    
+    // Log for debugging
+    if (!pagination) {
+      console.warn("No pagination metadata found in API response. Response structure:", data);
+    } else {
+      console.log("Pagination metadata extracted:", pagination);
+    }
+    
     return {
       status: true,
       message: data.message || "Roles fetched successfully",
       data: rolesData,
+      pagination,
     };
   } catch (error) {
     console.error("Get roles API error:", error);

@@ -16,6 +16,17 @@ const Roles = () => {
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [roleToDelete, setRoleToDelete] = useState<{ id: string; name: string } | null>(null);
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  
+  // Reset to page 1 when search term changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
 
   useEffect(() => {
     const fetchRoles = async () => {
@@ -25,12 +36,55 @@ const Roles = () => {
       try {
         const response = await getRolesApi({
           search: searchTerm,
-          page: 1,
-          limit: 10,
+          page: currentPage,
+          limit: rowsPerPage,
         });
         
         if (response.status && response.data) {
           setRoles(response.data);
+          
+          // Update pagination metadata
+          if (response.pagination) {
+            const totalItemsCount = response.pagination.totalItems || 0;
+            const calculatedTotalPages = response.pagination.totalPages || (totalItemsCount > 0 ? Math.ceil(totalItemsCount / rowsPerPage) : 1);
+            const finalTotalPages = Math.max(calculatedTotalPages, 1); // Ensure at least 1 page
+            
+            setTotalPages(finalTotalPages);
+            setTotalItems(totalItemsCount || response.data.length);
+            // Only update currentPage if it's different to avoid infinite loops
+            if (response.pagination.currentPage && response.pagination.currentPage !== currentPage) {
+              setCurrentPage(response.pagination.currentPage);
+            }
+            console.log("✅ Pagination metadata found:", {
+              currentPage: response.pagination.currentPage || currentPage,
+              totalPages: finalTotalPages,
+              totalItems: totalItemsCount || response.data.length,
+              rowsPerPage,
+              receivedData: response.data.length,
+              rawPagination: response.pagination,
+            });
+          } else {
+            // If no pagination metadata, try to infer from data
+            // If we got exactly the limit, there might be more pages
+            const hasMorePages = response.data.length === rowsPerPage;
+            console.warn("⚠️ No pagination metadata in response!");
+            console.warn("Full API response object:", JSON.stringify(response, null, 2));
+            console.warn("Data length:", response.data.length, "| Rows per page:", rowsPerPage, "| Current page:", currentPage);
+            
+            // If we got exactly the limit, assume there might be more pages
+            // This is a temporary workaround - the API should return total count
+            if (hasMorePages) {
+              // Show at least current page + 1 if we got a full page
+              // This allows navigation to next page to check if more data exists
+              setTotalPages(Math.max(currentPage + 1, 2));
+              console.log("Inferred totalPages:", Math.max(currentPage + 1, 2), "(because we got a full page)");
+            } else {
+              // If we got less than a full page, this is likely the last page
+              setTotalPages(currentPage);
+              console.log("Inferred totalPages:", currentPage, "(because we got less than a full page)");
+            }
+            setTotalItems(response.data.length);
+          }
         } else {
           setError(response.message || "Failed to load roles");
         }
@@ -43,12 +97,26 @@ const Roles = () => {
     };
 
     fetchRoles();
-  }, [searchTerm]);
+  }, [searchTerm, currentPage, rowsPerPage]);
 
   // Filter roles based on search term (client-side filtering as backup)
+  // Note: Server-side filtering is preferred, but this provides a fallback
   const filteredRoles = roles.filter((role) =>
     role.name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+  
+  // Handle page change
+  const handlePageChange = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+  
+  // Handle rows per page change
+  const handleRowsPerPageChange = (rows: number) => {
+    setRowsPerPage(rows);
+    setCurrentPage(1); // Reset to first page when changing rows per page
+  };
 
   const handleDeleteClick = (roleId: string, roleName: string) => {
     setRoleToDelete({ id: roleId, name: roleName });
@@ -166,7 +234,7 @@ const Roles = () => {
                 <tbody className="divide-y divide-white/5">
                   {filteredRoles.length === 0 ? (
                     <tr>
-                      <td colSpan={4} className="py-8 text-center">
+                      <td colSpan={3} className="py-8 text-center">
                         <div className="text-sm dark:text-whiteSecondary text-blackPrimary">
                           {searchTerm ? "No roles found matching your search." : "No roles found."}
                         </div>
@@ -246,7 +314,7 @@ const Roles = () => {
                 {deleteError && (
                   <tfoot>
                     <tr>
-                      <td colSpan={4} className="px-4 sm:px-6 lg:px-8 py-2">
+                      <td colSpan={3} className="px-4 sm:px-6 lg:px-8 py-2">
                         <div className="text-sm text-red-500 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded p-2">
                           {deleteError}
                         </div>
@@ -258,8 +326,15 @@ const Roles = () => {
             </div>
           )}
           <div className="flex justify-between items-center px-4 sm:px-6 lg:px-8 py-6 max-sm:flex-col gap-4 max-sm:pt-6 max-sm:pb-0">
-            <RowsPerPage />
-            <Pagination />
+            <RowsPerPage 
+              rowsPerPage={rowsPerPage} 
+              onRowsPerPageChange={handleRowsPerPageChange} 
+            />
+            <Pagination 
+              currentPage={currentPage} 
+              totalPages={totalPages} 
+              onPageChange={handlePageChange} 
+            />
           </div>
         </div>
       </div>

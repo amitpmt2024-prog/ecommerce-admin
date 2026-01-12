@@ -2,18 +2,19 @@
 // Role of the component: Pagination component that displays the page numbers and navigation buttons
 // Name of the component: Pagination.tsx
 // Developer: Aleksandar Kuzmanovic
-// Version: 1.0
-// Component call: <Pagination />
-// Input parameters: no input parameters
+// Version: 2.0
+// Component call: <Pagination currentPage={1} totalPages={10} onPageChange={(page) => {}} />
+// Input parameters: currentPage, totalPages, onPageChange
 // Output: Pagination component that displays the page numbers and navigation buttons
 // *********************
 
-import { useState } from 'react';
+interface PaginationProps {
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+}
 
-const Pagination = () => {
-    const totalPages = 10; // Total number of pages
-    const [currentPage, setCurrentPage] = useState(1);
-  
+const Pagination = ({ currentPage, totalPages, onPageChange }: PaginationProps) => {
     // Calculate the range of page numbers to display
     let startPage = currentPage - 1;
     if (startPage <= 0) startPage = 1;
@@ -31,8 +32,8 @@ const Pagination = () => {
     return (
       <div className="flex gap-2 items-center">
         <button
-          className="dark:bg-blackPrimary bg-whiteSecondary border border-gray-600 dark:text-whiteSecondary text-blackPrimary py-1 px-3 hover:border-gray-500"
-          onClick={() => setCurrentPage(currentPage - 1)}
+          className="dark:bg-blackPrimary bg-whiteSecondary border border-gray-600 dark:text-whiteSecondary text-blackPrimary py-1 px-3 hover:border-gray-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
         >
           Prev
@@ -41,15 +42,15 @@ const Pagination = () => {
           <button
             key={number}
             className={`border border-gray-600 py-1 px-3 hover:border-gray-500 ${currentPage === number ? 'dark:bg-whiteSecondary bg-blackPrimary dark:text-blackPrimary text-whiteSecondary' : 'dark:bg-blackPrimary bg-whiteSecondary dark:text-whiteSecondary text-blackPrimary'}`}
-            onClick={() => setCurrentPage(number)}
+            onClick={() => onPageChange(number)}
           >
             {number}
           </button>
         ))}
         <button
-          className="dark:bg-blackPrimary bg-whiteSecondary border border-gray-600 dark:text-whiteSecondary text-blackPrimary py-1 px-3 hover:border-gray-500"
-          onClick={() => setCurrentPage(currentPage + 1)}
-          disabled={currentPage === totalPages}
+          className="dark:bg-blackPrimary bg-whiteSecondary border border-gray-600 dark:text-whiteSecondary text-blackPrimary py-1 px-3 hover:border-gray-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          onClick={() => onPageChange(currentPage + 1)}
+          disabled={currentPage === totalPages || totalPages === 0}
         >
           Next
         </button>

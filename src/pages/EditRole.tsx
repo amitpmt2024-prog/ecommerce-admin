@@ -93,8 +93,34 @@ const EditRole = () => {
           // Handle different response structures for module IDs
           let moduleIds: number[] = [];
           
-          // Case 1: moduleIds is an array
-          if (role.moduleIds && Array.isArray(role.moduleIds)) {
+          // Case 1: Extract from roleModules.moduleId (primary source)
+          if (role.roleModules && Array.isArray(role.roleModules)) {
+            moduleIds = role.roleModules
+              .map((rm: any) => {
+                // Check for moduleId field first (primary source)
+                const moduleId = rm?.moduleId;
+                if (moduleId !== undefined && moduleId !== null) {
+                  if (typeof moduleId === 'string') {
+                    const parsed = parseInt(moduleId);
+                    return isNaN(parsed) ? null : parsed;
+                  }
+                  return typeof moduleId === 'number' ? moduleId : null;
+                }
+                // Fallback to module.id if moduleId is not present
+                if (rm?.module?.id) {
+                  const moduleId = rm.module.id;
+                  if (typeof moduleId === 'string') {
+                    const parsed = parseInt(moduleId);
+                    return isNaN(parsed) ? null : parsed;
+                  }
+                  return typeof moduleId === 'number' ? moduleId : null;
+                }
+                return null;
+              })
+              .filter((id: number | null): id is number => id !== null);
+          }
+          // Case 2: moduleIds is an array (fallback)
+          else if (role.moduleIds && Array.isArray(role.moduleIds)) {
             moduleIds = role.moduleIds.map((id: any) => {
               if (typeof id === 'string') {
                 const parsed = parseInt(id);
@@ -103,7 +129,7 @@ const EditRole = () => {
               return typeof id === 'number' ? id : null;
             }).filter((id: number | null): id is number => id !== null);
           }
-          // Case 2: modules is an array of module objects
+          // Case 3: modules is an array of module objects (fallback)
           else if (role.modules && Array.isArray(role.modules)) {
             moduleIds = role.modules.map((module: any) => {
               const moduleId = module.id || module.moduleId;
@@ -128,7 +154,8 @@ const EditRole = () => {
             }
           });
           
-          console.log("Original module IDs from role:", moduleIds); // Debug log
+          console.log("Role data:", role); // Debug log
+          console.log("Module IDs from roleModules.moduleId:", moduleIds); // Debug log
           console.log("Matched module IDs:", matchedModuleIds); // Debug log
           setSelectedModules(matchedModuleIds);
         } else {

@@ -157,12 +157,6 @@ const Roles = () => {
                     </th>
                     <th
                       scope="col"
-                      className="py-2 pl-4 pr-8 font-semibold sm:pl-6 lg:pl-8"
-                    >
-                      ID
-                    </th>
-                    <th
-                      scope="col"
                       className="py-2 pl-0 pr-4 text-right font-semibold table-cell sm:pr-6 lg:pr-8"
                     >
                       Actions
@@ -219,13 +213,6 @@ const Roles = () => {
                             <div className="flex items-center gap-x-4">
                               <div className="text-sm font-medium leading-6 dark:text-whiteSecondary text-blackPrimary">
                                 {getModuleNames()}
-                              </div>
-                            </div>
-                          </td>
-                          <td className="py-4 pl-4 pr-8 sm:pl-6 lg:pl-8">
-                            <div className="flex items-center gap-x-4">
-                              <div className="truncate text-sm font-medium leading-6 dark:text-whiteSecondary text-blackPrimary">
-                                {role.id}
                               </div>
                             </div>
                           </td>

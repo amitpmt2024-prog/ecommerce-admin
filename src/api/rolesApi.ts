@@ -14,6 +14,8 @@ import { checkUnauthorized } from "../utils/authUtils";
 export interface Role {
   id: string;
   name: string;
+  roleModules?: Array<{ module: { id: string; name: string } }>; // Nested structure: roleModules.module.name
+  modules?: Array<{ id: string; name: string }> | string[]; // Alternative structure: direct modules array
   [key: string]: any; // Allow for additional properties
 }
 

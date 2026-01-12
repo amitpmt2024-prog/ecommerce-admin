@@ -137,7 +137,8 @@ const Roles = () => {
             <div className="px-4 sm:px-6 lg:px-8 mt-6">
               <table className="mt-6 w-full whitespace-nowrap text-left max-lg:block max-lg:overflow-x-scroll">
                 <colgroup>
-                  <col className="w-full sm:w-4/12" />
+                  <col className="w-full sm:w-3/12" />
+                  <col className="lg:w-4/12" />
                   <col className="lg:w-2/12" />
                 </colgroup>
                 <thead className="border-b dark:border-white/10 border-black/10 text-sm leading-6 dark:text-whiteSecondary text-blackPrimary">
@@ -147,6 +148,12 @@ const Roles = () => {
                       className="py-2 pl-4 pr-8 font-semibold sm:pl-6 lg:pl-8"
                     >
                       Role Name
+                    </th>
+                    <th
+                      scope="col"
+                      className="py-2 pl-4 pr-8 font-semibold sm:pl-6 lg:pl-8"
+                    >
+                      Modules
                     </th>
                     <th
                       scope="col"
@@ -165,59 +172,94 @@ const Roles = () => {
                 <tbody className="divide-y divide-white/5">
                   {filteredRoles.length === 0 ? (
                     <tr>
-                      <td colSpan={3} className="py-8 text-center">
+                      <td colSpan={4} className="py-8 text-center">
                         <div className="text-sm dark:text-whiteSecondary text-blackPrimary">
                           {searchTerm ? "No roles found matching your search." : "No roles found."}
                         </div>
                       </td>
                     </tr>
                   ) : (
-                    filteredRoles.map((role) => (
-                      <tr key={role.id}>
-                        <td className="py-4 pl-4 pr-8 sm:pl-6 lg:pl-8">
-                          <div className="flex items-center gap-x-4">
-                            <div className="truncate text-sm font-medium leading-6 dark:text-whiteSecondary text-blackPrimary">
-                              {role.name || "N/A"}
+                    filteredRoles.map((role) => {
+                      // Extract module names from different possible structures
+                      const getModuleNames = (): string => {
+                        // Check for roleModules.module.name structure (nested)
+                        if (role.roleModules && Array.isArray(role.roleModules) && role.roleModules.length > 0) {
+                          const moduleNames = role.roleModules
+                            .map((rm: any) => rm?.module?.name)
+                            .filter((name: string) => name) // Filter out undefined/null values
+                            .join(", ");
+                          return moduleNames || "No modules";
+                        }
+                        
+                        // Check for direct modules array structure
+                        if (role.modules && Array.isArray(role.modules) && role.modules.length > 0) {
+                          // If modules is an array of objects with name property
+                          if (typeof role.modules[0] === 'object' && 'name' in role.modules[0]) {
+                            return role.modules.map((m: any) => m.name).join(", ");
+                          }
+                          // If modules is an array of strings
+                          if (typeof role.modules[0] === 'string') {
+                            return role.modules.join(", ");
+                          }
+                        }
+                        
+                        return "No modules";
+                      };
+
+                      return (
+                        <tr key={role.id}>
+                          <td className="py-4 pl-4 pr-8 sm:pl-6 lg:pl-8">
+                            <div className="flex items-center gap-x-4">
+                              <div className="truncate text-sm font-medium leading-6 dark:text-whiteSecondary text-blackPrimary">
+                                {role.name || "N/A"}
+                              </div>
                             </div>
-                          </div>
-                        </td>
-                        <td className="py-4 pl-4 pr-8 sm:pl-6 lg:pl-8">
-                          <div className="flex items-center gap-x-4">
-                            <div className="truncate text-sm font-medium leading-6 dark:text-whiteSecondary text-blackPrimary">
-                              {role.id}
+                          </td>
+                          <td className="py-4 pl-4 pr-8 sm:pl-6 lg:pl-8">
+                            <div className="flex items-center gap-x-4">
+                              <div className="text-sm font-medium leading-6 dark:text-whiteSecondary text-blackPrimary">
+                                {getModuleNames()}
+                              </div>
                             </div>
-                          </div>
-                        </td>
-                        <td className="py-4 pl-0 pr-4 text-right text-sm leading-6 dark:text-whiteSecondary text-blackPrimary table-cell pr-6 lg:pr-8">
-                          <div className="flex gap-x-1 justify-end">
-                            <Link
-                              to={`/roles/${role.id}`}
-                              className="dark:bg-blackPrimary dark:text-whiteSecondary text-blackPrimary border border-gray-600 w-8 h-8 block flex justify-center items-center cursor-pointer dark:hover:border-gray-500 hover:border-gray-400"
-                            >
-                              <HiOutlinePencil className="text-lg" />
-                            </Link>
-                            <button
-                              onClick={() => handleDeleteClick(role.id, role.name)}
-                              disabled={deletingId === role.id}
-                              className="dark:bg-blackPrimary bg-whiteSecondary dark:text-whiteSecondary text-blackPrimary border border-gray-600 w-8 h-8 block flex justify-center items-center cursor-pointer dark:hover:border-gray-500 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
-                              title="Delete role"
-                            >
-                              {deletingId === role.id ? (
-                                <span className="text-xs">...</span>
-                              ) : (
-                                <HiOutlineTrash className="text-lg" />
-                              )}
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))
+                          </td>
+                          <td className="py-4 pl-4 pr-8 sm:pl-6 lg:pl-8">
+                            <div className="flex items-center gap-x-4">
+                              <div className="truncate text-sm font-medium leading-6 dark:text-whiteSecondary text-blackPrimary">
+                                {role.id}
+                              </div>
+                            </div>
+                          </td>
+                          <td className="py-4 pl-0 pr-4 text-right text-sm leading-6 dark:text-whiteSecondary text-blackPrimary table-cell pr-6 lg:pr-8">
+                            <div className="flex gap-x-1 justify-end">
+                              <Link
+                                to={`/roles/${role.id}`}
+                                className="dark:bg-blackPrimary dark:text-whiteSecondary text-blackPrimary border border-gray-600 w-8 h-8 block flex justify-center items-center cursor-pointer dark:hover:border-gray-500 hover:border-gray-400"
+                              >
+                                <HiOutlinePencil className="text-lg" />
+                              </Link>
+                              <button
+                                onClick={() => handleDeleteClick(role.id, role.name)}
+                                disabled={deletingId === role.id}
+                                className="dark:bg-blackPrimary bg-whiteSecondary dark:text-whiteSecondary text-blackPrimary border border-gray-600 w-8 h-8 block flex justify-center items-center cursor-pointer dark:hover:border-gray-500 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                                title="Delete role"
+                              >
+                                {deletingId === role.id ? (
+                                  <span className="text-xs">...</span>
+                                ) : (
+                                  <HiOutlineTrash className="text-lg" />
+                                )}
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })
                   )}
                 </tbody>
                 {deleteError && (
                   <tfoot>
                     <tr>
-                      <td colSpan={3} className="px-4 sm:px-6 lg:px-8 py-2">
+                      <td colSpan={4} className="px-4 sm:px-6 lg:px-8 py-2">
                         <div className="text-sm text-red-500 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded p-2">
                           {deleteError}
                         </div>
